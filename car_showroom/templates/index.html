@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Showroom</title>
+    <link rel="stylesheet" href="static/css/style.css">
+</head>
+<body>
+    <h1>Welcome to the Car Showroom</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul class="flashes">
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <div>
+        {% if 'username' in session %}
+            <p>Logged in as: {{ session['username'] }}</p>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        {% else %}
+            <a href="{{ url_for('login') }}">Login</a>
+        {% endif %}
+    </div>
+
+    <form action="{{ url_for('search_cars') }}" method="get">
+        <input type="text" name="search_query" placeholder="Search by make or model" required>
+        <button type="submit">Search</button>
+    </form>
+
+    <h2>Filter Cars</h2>
+    <form id="filterForm">
+        <label for="sort_by">Sort by:</label>
+        <select name="sort_by" id="sort_by">
+            <option value="year">Year</option>
+            <option value="price">Price</option>
+        </select>
+        <label for="order">Order:</label>
+        <select name="order" id="order">
+            <option value="ASC">Ascending</option>
+            <option value="DESC">Descending</option>
+        </select>
+        <button type="submit">Apply Filters</button>
+    </form>
+
+    <h2>Available Cars</h2>
+    <div>
+        {% for car in cars %}
+            <div class="car">
+                <h3>{{ car.make }} {{ car.model }}</h3>
+                <p>Year: {{ car.year }}</p>
+                <p>Price: ${{ car.price }}</p>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% if 'username' in session and session['username'] == 'admin' %}
+        <a href="{{ url_for('add_car') }}">Add New Car</a>
+    {% endif %}
+</body>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        setTimeout(function() {
+            const flashes = document.querySelectorAll('.flashes');
+            flashes.forEach(flash => flash.style.display = 'none');
+        }, 5000); // Dismiss flash messages after 5 seconds
+    });
+</script>
+
+
+</html>
