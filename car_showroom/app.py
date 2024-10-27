@@ -24,15 +24,32 @@ db_config = {
 
 @app.route('/')
 def index():
+    search_query = request.args.get('search_query', '')
+    sort_by = request.args.get('sort_by', 'year')
+    order = request.args.get('order', 'ASC').upper()
+
+    allowed_sort_columns = {'year', 'price', 'make', 'model'}
+    allowed_order = {'ASC', 'DESC'}
+    sort_by = sort_by if sort_by in allowed_sort_columns else 'year'
+    order = order if order in allowed_order else 'ASC'
+
     try:
         conn = mysql.connector.connect(**db_config)
         cursor = conn.cursor(dictionary=True)
-        query = "SELECT * FROM cars"
-        cursor.execute(query)
+
+        # Fetch all cars if search_query is empty; otherwise, apply search filter
+        if search_query:
+            query = f"SELECT * FROM cars WHERE make LIKE %s OR model LIKE %s ORDER BY {sort_by} {order}"
+            cursor.execute(query, (f"%{search_query}%", f"%{search_query}%"))
+        else:
+            query = f"SELECT * FROM cars ORDER BY {sort_by} {order}"
+            cursor.execute(query)
+
         cars = cursor.fetchall()
         cursor.close()
         conn.close()
-        return render_template('index.html', cars=cars, search_query='', sort_by='year', order='ASC')
+
+        return render_template('index.html', cars=cars, search_query=search_query, sort_by=sort_by, order=order)
 
     except mysql.connector.Error as err:
         flash(f"Database error: {err}", 'danger')
@@ -72,33 +89,6 @@ def logout():
     session.pop('username', None)
     flash('Logged out successfully.', 'success')
     return redirect(url_for('index'))
-
-
-@app.route('/search_cars', methods=['GET'])
-def search_cars():
-    search_query = request.args.get('search_query', '')
-    sort_by = request.args.get('sort_by', 'year')
-    order = request.args.get('order', 'ASC').upper()
-
-    allowed_sort_columns = {'year', 'price', 'make', 'model'}
-    allowed_order = {'ASC', 'DESC'}
-    sort_by = sort_by if sort_by in allowed_sort_columns else 'year'
-    order = order if order in allowed_order else 'ASC'
-
-    try:
-        conn = mysql.connector.connect(**db_config)
-        cursor = conn.cursor(dictionary=True)
-
-        query = f"SELECT * FROM cars WHERE make LIKE %s OR model LIKE %s ORDER BY {sort_by} {order}"
-        cursor.execute(query, (f"%{search_query}%", f"%{search_query}%"))
-        cars = cursor.fetchall()
-        cursor.close()
-        conn.close()
-        return render_template('index.html', cars=cars, search_query=search_query, sort_by=sort_by, order=order)
-
-    except mysql.connector.Error as err:
-        flash(f"Database error: {err}", 'danger')
-        return render_template('error.html')
 
 
 @app.route('/add_car', methods=['GET', 'POST'])

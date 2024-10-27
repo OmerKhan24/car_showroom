@@ -28,25 +28,25 @@
         {% endif %}
     </div>
 
-    <form action="{{ url_for('search_cars') }}" method="get">
-        <input type="text" name="search_query" placeholder="Search by make or model" required>
-        <button type="submit">Search</button>
-    </form>
-
-    <h2>Filter Cars</h2>
-    <form id="filterForm">
+    <form action="{{ url_for('index') }}" method="get">
+        <!-- Make the search input optional by removing 'required' -->
+        <input type="text" name="search_query" placeholder="Search by make or model" value="{{ search_query }}">
+    
         <label for="sort_by">Sort by:</label>
         <select name="sort_by" id="sort_by">
-            <option value="year">Year</option>
-            <option value="price">Price</option>
+            <option value="year" {% if sort_by == 'year' %}selected{% endif %}>Year</option>
+            <option value="price" {% if sort_by == 'price' %}selected{% endif %}>Price</option>
         </select>
+    
         <label for="order">Order:</label>
         <select name="order" id="order">
-            <option value="ASC">Ascending</option>
-            <option value="DESC">Descending</option>
+            <option value="ASC" {% if order == 'ASC' %}selected{% endif %}>Ascending</option>
+            <option value="DESC" {% if order == 'DESC' %}selected{% endif %}>Descending</option>
         </select>
-        <button type="submit">Apply Filters</button>
+    
+        <button type="submit">Search & Apply Filters</button>
     </form>
+    
 
     <h2>Available Cars</h2>
     <div>
@@ -72,6 +72,4 @@
         }, 5000); // Dismiss flash messages after 5 seconds
     });
 </script>
-
-
 </html>

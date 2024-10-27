@@ -1,8 +1,8 @@
 /* General Body Styles */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    color: #333;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background-color: #f8f9fa;
+    color: #212529;
     margin: 0;
     padding: 20px;
 }
@@ -10,11 +10,17 @@ body {
 /* Heading Styles */
 h1 {
     text-align: center;
-    color: #2c3e50;
+    color: #007bff;
+    font-size: 2.5rem;
+    margin-bottom: 20px;
 }
 
 h2 {
-    color: #2980b9;
+    color: #343a40;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 10px;
+    font-size: 1.5rem;
+    margin-top: 30px;
 }
 
 /* Flash Messages */
@@ -23,18 +29,21 @@ h2 {
     padding: 10px;
     margin: 10px 0;
     border-radius: 5px;
+    font-weight: bold;
 }
 
 .flashes li.success {
-    background-color: #dff0d8;
-    color: #3c763d;
-    border: 1px solid #d6e9c6;
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+    padding: 10px;
 }
 
 .flashes li.danger {
-    background-color: #f2dede;
-    color: #a94442;
-    border: 1px solid #ebccd1;
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    padding: 10px;
 }
 
 /* Logged In User Message */
@@ -45,11 +54,13 @@ div {
 
 a {
     text-decoration: none;
-    color: #2980b9;
+    color: #007bff;
+    transition: color 0.2s;
 }
 
 a:hover {
     text-decoration: underline;
+    color: #0056b3;
 }
 
 /* Search Form Styles */
@@ -62,22 +73,29 @@ form {
 form input[type="text"] {
     padding: 10px;
     width: 300px;
-    border: 1px solid #ccc;
+    border: 1px solid #ced4da;
     border-radius: 5px;
+    transition: border-color 0.2s;
+}
+
+form input[type="text"]:focus {
+    border-color: #007bff;
+    outline: none;
 }
 
 form button {
     padding: 10px 15px;
     border: none;
-    background-color: #2980b9;
+    background-color: #007bff;
     color: white;
     border-radius: 5px;
     margin-left: 10px;
     cursor: pointer;
+    transition: background-color 0.2s;
 }
 
 form button:hover {
-    background-color: #1c5980;
+    background-color: #0056b3;
 }
 
 /* Filter Form Styles */
@@ -89,35 +107,49 @@ form button:hover {
 #filterForm select {
     padding: 10px;
     border-radius: 5px;
-    border: 1px solid #ccc;
+    border: 1px solid #ced4da;
     margin-right: 10px;
+    transition: border-color 0.2s;
+}
+
+#filterForm select:focus {
+    border-color: #007bff;
+    outline: none;
 }
 
 #filterForm button {
-    background-color: #27ae60;
+    background-color: #28a745;
 }
 
 #filterForm button:hover {
-    background-color: #218c4b;
+    background-color: #218838;
 }
 
 /* Car Display Styles */
 .car {
     background-color: white;
-    border: 1px solid #ccc;
+    border: 1px solid #dee2e6;
     border-radius: 5px;
     padding: 15px;
     margin: 10px 0;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.2s;
+}
+
+.car:hover {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
 .car h3 {
     margin: 0;
-    color: #2c3e50;
+    color: #007bff;
+    font-size: 1.5rem;
 }
 
 .car p {
     margin: 5px 0;
+    font-size: 1rem;
+    line-height: 1.5;
 }
 
 /* Responsive Styles */
