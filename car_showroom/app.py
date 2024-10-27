@@ -68,27 +68,83 @@ def admin_required(f):
     return wrap
 
 
+# @app.route('/login', methods=['GET', 'POST'])
+# def login():
+#     if request.method == 'POST':
+#         username = request.form['username']
+#         password = request.form['password']
+        
+#         if username in users and check_password_hash(users[username], password):
+#             session['username'] = username
+#             flash('Login successful!', 'success')
+#             return redirect(url_for('index'))
+#         else:
+#             flash('Invalid credentials!', 'danger')
+    
+#     return render_template('login.html')
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        
-        if username in users and check_password_hash(users[username], password):
-            session['username'] = username
-            flash('Login successful!', 'success')
-            return redirect(url_for('index'))
-        else:
-            flash('Invalid credentials!', 'danger')
-    
+
+        try:
+            conn = mysql.connector.connect(**db_config)
+            cursor = conn.cursor(dictionary=True)
+            cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
+            user = cursor.fetchone()
+            cursor.close()
+            conn.close()
+
+            if user and check_password_hash(user['password_hash'], password):
+                session['user_id'] = user['id']
+                session['username'] = user['username']
+                session['role'] = user['role']  # Store the role in the session
+                flash("Logged in successfully!", "success")
+                return redirect(url_for('index'))
+            else:
+                flash("Invalid credentials!", "danger")
+        except mysql.connector.Error as err:
+            flash(f"Database error: {err}", 'danger')
+
     return render_template('login.html')
+
 
 
 @app.route('/logout')
 def logout():
+    session.pop('user_id', None)
     session.pop('username', None)
-    flash('Logged out successfully.', 'success')
+    flash("Logged out successfully.", "success")
     return redirect(url_for('index'))
+
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if request.method == 'POST':
+        username = request.form['username']
+        email = request.form['email']
+        password = request.form['password']
+
+        password_hash = generate_password_hash(password)
+        role = 'user'  # Automatically assign the 'user' role for new registrations
+        
+        try:
+            conn = mysql.connector.connect(**db_config)
+            cursor = conn.cursor()
+            cursor.execute("INSERT INTO users (username, email, password_hash, role) VALUES (%s, %s, %s, %s)", 
+                           (username, email, password_hash, role))
+            conn.commit()
+            cursor.close()
+            conn.close()
+            flash("Account created successfully!", "success")
+            return redirect(url_for('login'))
+        except mysql.connector.Error as err:
+            flash(f"Database error: {err}", 'danger')
+
+    return render_template('signup.html')
+
 
 
 @app.route('/add_car', methods=['GET', 'POST'])
@@ -115,6 +171,61 @@ def add_car():
             flash(f"Database error: {err}", 'danger')
     
     return render_template('add_car.html')
+
+
+@app.route('/add_to_wishlist/<int:car_id>')
+def add_to_wishlist(car_id):
+    if 'user_id' not in session:
+        flash("Please log in to add cars to your wishlist.", "warning")
+        return redirect(url_for('login'))
+
+    user_id = session['user_id']
+    
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor()
+        
+        # Check if car is already in wishlist
+        cursor.execute("SELECT * FROM wishlists WHERE user_id = %s AND car_id = %s", (user_id, car_id))
+        wishlist_item = cursor.fetchone()
+        
+        if wishlist_item:
+            flash("Car is already in your wishlist!", "info")
+        else:
+            cursor.execute("INSERT INTO wishlists (user_id, car_id) VALUES (%s, %s)", (user_id, car_id))
+            conn.commit()
+            flash("Car added to wishlist!", "success")
+
+        cursor.close()
+        conn.close()
+    except mysql.connector.Error as err:
+        flash(f"Database error: {err}", 'danger')
+
+    return redirect(url_for('index'))
+
+
+@app.route('/wishlist')
+def wishlist():
+    if 'user_id' not in session:
+        flash("Please log in to view your wishlist.", "warning")
+        return redirect(url_for('login'))
+
+    user_id = session['user_id']
+    
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT cars.* FROM cars INNER JOIN wishlists ON cars.id = wishlists.car_id WHERE wishlists.user_id = %s", 
+                       (user_id,))
+        wishlist_cars = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        
+        return render_template('wishlist.html', cars=wishlist_cars)
+    except mysql.connector.Error as err:
+        flash(f"Database error: {err}", 'danger')
+        return render_template('error.html')
+
 
 if __name__ == '__main__':
     app.run(debug=True)

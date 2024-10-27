@@ -1,168 +1,180 @@
-/* General Body Styles */
+/* General Styles */
 body {
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-    background-color: #f8f9fa;
-    color: #212529;
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
     margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
     padding: 20px;
 }
 
-/* Heading Styles */
-h1 {
-    text-align: center;
-    color: #007bff;
-    font-size: 2.5rem;
-    margin-bottom: 20px;
+/* Header Styles */
+header {
+    background: #333;
+    color: #fff;
+    padding: 15px 0;
 }
 
-h2 {
-    color: #343a40;
-    border-bottom: 2px solid #007bff;
-    padding-bottom: 10px;
-    font-size: 1.5rem;
-    margin-top: 30px;
+.logo {
+    display: inline-block;
+    font-size: 24px;
+    margin-left: 20px;
+}
+
+.navbar {
+    float: right;
+    margin-right: 20px;
+}
+
+.navbar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.navbar ul li {
+    display: inline;
+    margin: 0 15px;
+}
+
+.navbar a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.navbar a:hover {
+    text-decoration: underline;
+}
+
+/* Main Styles */
+main {
+    padding: 20px 0;
 }
 
 /* Flash Messages */
 .flashes {
-    list-style-type: none;
+    margin: 20px 0;
     padding: 10px;
-    margin: 10px 0;
-    border-radius: 5px;
-    font-weight: bold;
+    background: #ffeb3b;
+    border: 1px solid #fbc02d;
+    list-style: none;
 }
 
-.flashes li.success {
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
-    padding: 10px;
-}
-
-.flashes li.danger {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-    padding: 10px;
-}
-
-/* Logged In User Message */
-div {
+/* Search Section */
+.search-section {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
-    text-align: center;
 }
 
-a {
-    text-decoration: none;
-    color: #007bff;
-    transition: color 0.2s;
-}
-
-a:hover {
-    text-decoration: underline;
-    color: #0056b3;
-}
-
-/* Search Form Styles */
-form {
+.search-form {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
+    align-items: center;
+}
+
+input[type="text"] {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    flex: 1;
+    margin-right: 10px;
+}
+
+.select-group {
+    margin: 0 10px;
+}
+
+.select-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.submit-button {
+    padding: 10px 20px;
+    background: #007BFF;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.submit-button:hover {
+    background: #0056b3;
+}
+
+/* Cars Section */
+.cars-section {
     margin: 20px 0;
 }
 
-form input[type="text"] {
-    padding: 10px;
-    width: 300px;
-    border: 1px solid #ced4da;
-    border-radius: 5px;
-    transition: border-color 0.2s;
+.car-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
 }
 
-form input[type="text"]:focus {
-    border-color: #007bff;
-    outline: none;
-}
-
-form button {
-    padding: 10px 15px;
-    border: none;
-    background-color: #007bff;
-    color: white;
-    border-radius: 5px;
-    margin-left: 10px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-form button:hover {
-    background-color: #0056b3;
-}
-
-/* Filter Form Styles */
-#filterForm {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-#filterForm select {
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #ced4da;
-    margin-right: 10px;
-    transition: border-color 0.2s;
-}
-
-#filterForm select:focus {
-    border-color: #007bff;
-    outline: none;
-}
-
-#filterForm button {
-    background-color: #28a745;
-}
-
-#filterForm button:hover {
-    background-color: #218838;
-}
-
-/* Car Display Styles */
 .car {
-    background-color: white;
-    border: 1px solid #dee2e6;
-    border-radius: 5px;
-    padding: 15px;
-    margin: 10px 0;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    transition: box-shadow 0.2s;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
 }
 
-.car:hover {
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+.wishlist-button {
+    background: #28a745;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
 }
 
-.car h3 {
-    margin: 0;
-    color: #007bff;
-    font-size: 1.5rem;
+.wishlist-button:hover {
+    background: #218838;
 }
 
-.car p {
-    margin: 5px 0;
-    font-size: 1rem;
-    line-height: 1.5;
+/* Admin Section */
+.admin-section {
+    margin: 20px 0;
 }
 
-/* Responsive Styles */
-@media (max-width: 600px) {
-    form {
-        flex-direction: column;
-    }
+.admin-button {
+    background: #007BFF;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+}
 
-    form input[type="text"],
-    form button,
-    #filterForm select,
-    #filterForm button {
-        width: 100%;
-        margin: 5px 0;
-    }
+.admin-button:hover {
+    background: #0056b3;
+}
+
+/* Footer Styles */
+footer {
+    background: #333;
+    color: #fff;
+    text-align: center;
+    padding: 10px 0;
+    margin-top: 20px;
 }

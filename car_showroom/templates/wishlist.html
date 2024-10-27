@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your Wishlist</title>
+    <link rel="stylesheet" href="static/css/wishlist.css" />
+    <!-- Link to the same CSS file as index -->
+</head>
+<body>
+    <!-- Header Section -->
+    <header>
+        <div class="container">
+            <h1>Car Showroom</h1>
+            <nav>
+                {% if 'username' in session %}
+                <a href="{{ url_for('logout') }}">Logout</a>
+                <a href="{{ url_for('index') }}">Back to Home</a>
+                {% else %} 
+
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <h2>Your Wishlist</h2>
+        {% if cars %}
+        <div class="car-list">
+            {% for car in cars %}
+            <div class="car">
+                <h3>{{ car.make }} {{ car.model }}</h3>
+                <p>Year: {{ car.year }}</p>
+                <p>Price: ${{ car.price }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p>Your wishlist is empty.</p>
+        {% endif %}
+    </div>
+
+    <!-- Footer Section -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Car Showroom. All Rights Reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

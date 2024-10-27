@@ -7,69 +7,93 @@
     <link rel="stylesheet" href="static/css/style.css">
 </head>
 <body>
-    <h1>Welcome to the Car Showroom</h1>
+    <header>
+        <div class="container">
+            <h1 class="logo">Car Showroom</h1>
+            <nav class="navbar">
+                <ul>
+                    <li><a href="{{ url_for('index') }}">Home</a></li>
+                    {% if 'username' in session %}
+                        <li><a href="{{ url_for('wishlist') }}">Wishlist</a></li>
+                        <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                    {% else %}
+                        <li><a href="{{ url_for('login') }}">Login</a></li>
+                        <li><a href="{{ url_for('signup') }}">Signup</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </header>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <ul class="flashes">
-                {% for category, message in messages %}
-                    <li class="{{ category }}">{{ message }}</li>
+    <main class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flashes">
+                    {% for category, message in messages %}
+                        <li class="{{ category }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+        <section class="search-section">
+            <form action="{{ url_for('index') }}" method="get" class="search-form">
+                <input type="text" name="search_query" placeholder="Search by make or model" value="{{ search_query }}">
+                
+                <div class="select-group">
+                    <label for="sort_by">Sort by:</label>
+                    <select name="sort_by" id="sort_by">
+                        <option value="year" {% if sort_by == 'year' %}selected{% endif %}>Year</option>
+                        <option value="price" {% if sort_by == 'price' %}selected{% endif %}>Price</option>
+                    </select>
+                </div>
+
+                <div class="select-group">
+                    <label for="order">Order:</label>
+                    <select name="order" id="order">
+                        <option value="ASC" {% if order == 'ASC' %}selected{% endif %}>Ascending</option>
+                        <option value="DESC" {% if order == 'DESC' %}selected{% endif %}>Descending</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="submit-button">Search & Apply Filters</button>
+            </form>
+        </section>
+
+        <section class="cars-section">
+            <h2>Available Cars</h2>
+            <div class="car-list">
+                {% for car in cars %}
+                    <div class="car">
+                        <h3>{{ car.make }} {{ car.model }}</h3>
+                        <p>Year: {{ car.year }}</p>
+                        <p>Price: ${{ car.price }}</p>
+                        <a href="{{ url_for('add_to_wishlist', car_id=car.id) }}" class="wishlist-button">Add to Wishlist</a>
+                    </div>
                 {% endfor %}
-            </ul>
-        {% endif %}
-    {% endwith %}
-
-    <div>
-        {% if 'username' in session %}
-            <p>Logged in as: {{ session['username'] }}</p>
-            <a href="{{ url_for('logout') }}">Logout</a>
-        {% else %}
-            <a href="{{ url_for('login') }}">Login</a>
-        {% endif %}
-    </div>
-
-    <form action="{{ url_for('index') }}" method="get">
-        <!-- Make the search input optional by removing 'required' -->
-        <input type="text" name="search_query" placeholder="Search by make or model" value="{{ search_query }}">
-    
-        <label for="sort_by">Sort by:</label>
-        <select name="sort_by" id="sort_by">
-            <option value="year" {% if sort_by == 'year' %}selected{% endif %}>Year</option>
-            <option value="price" {% if sort_by == 'price' %}selected{% endif %}>Price</option>
-        </select>
-    
-        <label for="order">Order:</label>
-        <select name="order" id="order">
-            <option value="ASC" {% if order == 'ASC' %}selected{% endif %}>Ascending</option>
-            <option value="DESC" {% if order == 'DESC' %}selected{% endif %}>Descending</option>
-        </select>
-    
-        <button type="submit">Search & Apply Filters</button>
-    </form>
-    
-
-    <h2>Available Cars</h2>
-    <div>
-        {% for car in cars %}
-            <div class="car">
-                <h3>{{ car.make }} {{ car.model }}</h3>
-                <p>Year: {{ car.year }}</p>
-                <p>Price: ${{ car.price }}</p>
             </div>
-        {% endfor %}
-    </div>
+        </section>
 
-    {% if 'username' in session and session['username'] == 'admin' %}
-        <a href="{{ url_for('add_car') }}">Add New Car</a>
-    {% endif %}
+        {% if 'username' in session and session['username'] == 'admin' %}
+            <section class="admin-section">
+                <a href="{{ url_for('add_car') }}" class="admin-button">Add New Car</a>
+            </section>
+        {% endif %}
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Car Showroom. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            setTimeout(function() {
+                const flashes = document.querySelectorAll('.flashes');
+                flashes.forEach(flash => flash.style.display = 'none');
+            }, 5000); // Dismiss flash messages after 5 seconds
+        });
+    </script>
 </body>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        setTimeout(function() {
-            const flashes = document.querySelectorAll('.flashes');
-            flashes.forEach(flash => flash.style.display = 'none');
-        }, 5000); // Dismiss flash messages after 5 seconds
-    });
-</script>
 </html>
