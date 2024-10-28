@@ -3,37 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Car Showroom</title>
+    <title>Luxury Car Showroom</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&family=Montserrat:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Lora', serif;
+            background-color: #f5f5f5;
+        }
+        header {
+            background-color: #2c3e50; /* Dark navy blue */
+        }
+        .nav-link {
+            color: #ecf0f1 !important; /* Light gray */
+        }
+        .nav-link:hover {
+            color: #bdc3c7 !important; /* Lighter gray */
+        }
+        .carousel-item img {
+            height: 400px; /* Fixed height for carousel images */
+            object-fit: cover;
+            width: 100%; /* Ensure the image takes the full width */
+        }
+        .intro {
+            background-color: #e74c3c; /* Red */
+            color: white;
+            padding: 30px 0;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .intro h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .footer {
+            background-color: #34495e; /* Dark gray */
+            color: white;
+            padding: 20px 0;
+        }
+    </style>
 </head>
 <body>
     <!-- Header -->
-    <header class="bg-primary text-white">
+    <header class="text-white">
         <div class="container d-flex justify-content-between align-items-center py-3">
-            <h1 class="h4">Car Showroom</h1>
+            <h1 class="h4">Luxury Car Showroom</h1>
             <nav>
                 <ul class="nav">
                     {% if 'username' in session %}
                         <li class="nav-item">
-                            <a class="nav-link text-white" href="{{ url_for('wishlist') }}">Wishlist</a>
+                            <a class="nav-link" href="{{ url_for('wishlist') }}">Wishlist</a>
                         </li>
                         {% if 'username' in session and session['username'] == 'admin' %}
                             <li class="nav-item">
-                                <a class="nav-link text-white" href="{{ url_for('add_vehicle') }}">Add Vehicle</a>
+                                <a class="nav-link" href="{{ url_for('add_vehicle') }}">Add Vehicle</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-white" href="{{ url_for('view_test_drives') }}">View Test Drives</a>
+                                <a class="nav-link" href="{{ url_for('view_test_drives') }}">View Test Drives</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('view_inquiries') }}">View Inquiries</a>  <!-- New link -->
                             </li>
                         {% endif %}
                         <li class="nav-item">
-                            <a class="nav-link text-white" href="{{ url_for('logout') }}">Logout</a>
+                            <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link text-white" href="{{ url_for('login') }}">Login</a>
+                            <a class="nav-link" href="{{ url_for('login') }}">Login</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-white" href="{{ url_for('signup') }}">Sign Up</a>
+                            <a class="nav-link" href="{{ url_for('signup') }}">Sign Up</a>
                         </li>
                     {% endif %}
                 </ul>
@@ -41,8 +86,43 @@
         </div>
     </header>
 
+    <!-- Introduction Section -->
+    <div class="container my-4 intro text-center">
+        <h2>Welcome to Our Luxury Car Showroom</h2>
+        <p>We bring you the highest quality vehicles, handpicked for your driving pleasure. Experience excellence and style in every ride!</p>
+    </div>
+
+    <!-- Slideshow Section -->
+    <div id="vehicleCarousel" class="carousel slide" data-ride="carousel" data-interval="3000"> <!-- Added data-interval for automatic cycling -->
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="{{ url_for('static', filename='img/jeff-smith-Wg-2kBVND3c-unsplash.jpg') }}" class="d-block w-100" alt="Car Image 1">
+            </div>
+            <div class="carousel-item">
+                <img src="{{ url_for('static', filename='img/michael-jasmund-aUQzKoMcWh4-unsplash.jpg') }}" class="d-block w-100" alt="Car Image 2">
+            </div>
+            <div class="carousel-item">
+                <img src="{{ url_for('static', filename='img/patrick-langwallner-5UXeieG7YI4-unsplash.jpg') }}" class="d-block w-100" alt="Car Image 3">
+            </div>
+            <div class="carousel-item">
+                <img src="{{ url_for('static', filename='img/tim-trad-CLm3pWXrS9Q-unsplash.jpg') }}" class="d-block w-100" alt="Car Image 4">
+            </div>
+            <div class="carousel-item">
+                <img src="{{ url_for('static', filename='img/why-kei-8e2gal_GIE8-unsplash.jpg') }}" class="d-block w-100" alt="Car Image 5">
+            </div>
+        </div>
+        <a class="carousel-control-prev" href="#vehicleCarousel" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#vehicleCarousel" role="button" data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+        </a>
+    </div>
+
     <div class="container">
-        <h1 class="mt-4">Available Vehicles</h1>
+        <h1 class="mt-4 text-center">Available Vehicles</h1>
 
         <!-- Flash messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -67,13 +147,14 @@
                 <option value="ASC" {% if order == 'ASC' %}selected{% endif %}>Ascending</option>
                 <option value="DESC" {% if order == 'DESC' %}selected{% endif %}>Descending</option>
             </select>
-            <button type="submit" class="btn btn-primary">Search</button>
+            <button type="submit" class="btn btn-danger">Search</button>
         </form>
 
         <div class="row">
             {% for vehicle in vehicles %}
                 <div class="col-md-4">
                     <div class="card mb-4">
+                        <img src="{{ url_for('static', filename='img/' + vehicle.image) }}" class="card-img-top" alt="{{ vehicle.make }} {{ vehicle.model }}">
                         <div class="card-body">
                             <h5 class="card-title">{{ vehicle.make }} {{ vehicle.model }}</h5>
                             <p class="card-text">Year: {{ vehicle.year }}</p>
@@ -85,14 +166,15 @@
                 </div>
             {% endfor %}
         </div>
+        
     </div>
 
     <!-- Footer -->
-    <footer class="bg-light text-center text-lg-start">
+    <footer class="footer text-center">
         <div class="container p-4">
             <div class="text-center">
-                <h5 class="text-uppercase">Car Showroom</h5>
-                <p>&copy; 2024 Car Showroom. All Rights Reserved.</p>
+                <h5 class="text-uppercase">Luxury Car Showroom</h5>
+                <p>&copy; 2024 Luxury Car Showroom. All Rights Reserved.</p>
             </div>
         </div>
     </footer>

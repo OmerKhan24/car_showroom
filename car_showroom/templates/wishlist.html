@@ -1,56 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Your Wishlist</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&family=Montserrat:wght@300;500;700&display=swap" rel="stylesheet" />
     <style>
-        /* Set full height for html and body */
-        html, body {
-            height: 100%;
-            margin: 0;
-        }
         body {
-            display: flex;
-            flex-direction: column;
+            font-family: "Lora", serif;
+            background-color: #f5f5f5;
         }
-        .content {
-            flex: 1; /* This makes the content take up available space */
+        header {
+            background-color: #2c3e50; /* Dark navy blue */
         }
-        footer {
-            background: #f8f9fa; /* Optional: To match your existing footer color */
+        .nav-link {
+            color: #ecf0f1 !important; /* Light gray */
+        }
+        .nav-link:hover {
+            color: #bdc3c7 !important; /* Lighter gray */
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .footer {
+            background-color: #34495e; /* Dark gray */
+            color: white;
+            padding: 20px 0;
+        }
+        .fixed-bottom {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
         }
     </style>
 </head>
 <body>
     <!-- Header -->
-    <header class="bg-primary text-white">
+    <header class="text-white">
         <div class="container d-flex justify-content-between align-items-center py-3">
-            <h1 class="h4">Car Showroom</h1>
+            <h1 class="h4">Luxury Car Showroom</h1>
             <nav>
                 <ul class="nav">
                     {% if 'username' in session %}
                         <li class="nav-item">
-                            <a class="nav-link text-white" href="{{ url_for('index') }}">Home</a>
+                            <a class="nav-link" href="{{ url_for('index') }}">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('wishlist') }}">Wishlist</a>
                         </li>
                         {% if session['username'] == 'admin' %}
                             <li class="nav-item">
-                                <a class="nav-link text-white" href="{{ url_for('add_vehicle') }}">Add Vehicle</a>
+                                <a class="nav-link" href="{{ url_for('add_vehicle') }}">Add Vehicle</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-white" href="{{ url_for('view_test_drives') }}">View Test Drives</a>
+                                <a class="nav-link" href="{{ url_for('view_test_drives') }}">View Test Drives</a>
                             </li>
                         {% endif %}
                         <li class="nav-item">
-                            <a class="nav-link text-white" href="{{ url_for('logout') }}">Logout</a>
+                            <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link text-white" href="{{ url_for('login') }}">Login</a>
+                            <a class="nav-link" href="{{ url_for('login') }}">Login</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-white" href="{{ url_for('signup') }}">Sign Up</a>
+                            <a class="nav-link" href="{{ url_for('signup') }}">Sign Up</a>
                         </li>
                     {% endif %}
                 </ul>
@@ -58,8 +75,8 @@
         </div>
     </header>
 
-    <div class="container my-4 content"> <!-- Added class "content" -->
-        <h2>Your Wishlist</h2>
+    <div class="container my-4">
+        <h2 class="mt-4 text-center">Your Wishlist</h2>
 
         <!-- Flash messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -89,16 +106,16 @@
                 {% endfor %}
             </div>
         {% else %}
-            <p>Your wishlist is empty.</p>
+            <p class="text-center">Your wishlist is empty.</p>
         {% endif %}
     </div>
 
     <!-- Footer -->
-    <footer class="bg-light text-center text-lg-start">
+    <footer class="footer text-center fixed-bottom">
         <div class="container p-4">
             <div class="text-center">
-                <h5 class="text-uppercase">Car Showroom</h5>
-                <p>&copy; 2024 Car Showroom. All Rights Reserved.</p>
+                <h5 class="text-uppercase">Luxury Car Showroom</h5>
+                <p>&copy; 2024 Luxury Car Showroom. All Rights Reserved.</p>
             </div>
         </div>
     </footer>
