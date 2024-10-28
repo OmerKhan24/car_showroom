@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Vehicle</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h2 class="mt-4">Add Vehicle</h2>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="my-3">
+              {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('add_vehicle') }}">
+            <div class="form-group">
+                <label for="make">Make</label>
+                <input type="text" name="make" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="model">Model</label>
+                <input type="text" name="model" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="year">Year</label>
+                <input type="number" name="year" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="price">Price</label>
+                <input type="number" name="price" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="make">Description</label>
+                <input type="text" name="description" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="vehicle_type">Vehicle Type</label>
+                <select name="vehicle_type" class="form-control" required>
+                    <option value="Car">Car</option>
+                    <option value="Bike">Bike</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Vehicle</button>
+        </form>
+    </div>
+</body>
+</html>

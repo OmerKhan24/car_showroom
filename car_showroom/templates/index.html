@@ -4,96 +4,101 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Car Showroom</title>
-    <link rel="stylesheet" href="static/css/style.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-    <header>
-        <div class="container">
-            <h1 class="logo">Car Showroom</h1>
-            <nav class="navbar">
-                <ul>
-                    <li><a href="{{ url_for('index') }}">Home</a></li>
+    <!-- Header -->
+    <header class="bg-primary text-white">
+        <div class="container d-flex justify-content-between align-items-center py-3">
+            <h1 class="h4">Car Showroom</h1>
+            <nav>
+                <ul class="nav">
                     {% if 'username' in session %}
-                        <li><a href="{{ url_for('wishlist') }}">Wishlist</a></li>
-                        <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{{ url_for('wishlist') }}">Wishlist</a>
+                        </li>
+                        {% if 'username' in session and session['username'] == 'admin' %}
+                            <li class="nav-item">
+                                <a class="nav-link text-white" href="{{ url_for('add_vehicle') }}">Add Vehicle</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white" href="{{ url_for('view_test_drives') }}">View Test Drives</a>
+                            </li>
+                        {% endif %}
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{{ url_for('logout') }}">Logout</a>
+                        </li>
                     {% else %}
-                        <li><a href="{{ url_for('login') }}">Login</a></li>
-                        <li><a href="{{ url_for('signup') }}">Signup</a></li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{{ url_for('login') }}">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{{ url_for('signup') }}">Sign Up</a>
+                        </li>
                     {% endif %}
                 </ul>
             </nav>
         </div>
     </header>
 
-    <main class="container">
+    <div class="container">
+        <h1 class="mt-4">Available Vehicles</h1>
+
+        <!-- Flash messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <ul class="flashes">
-                    {% for category, message in messages %}
-                        <li class="{{ category }}">{{ message }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
+          {% if messages %}
+            <div class="my-3">
+              {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
         {% endwith %}
 
-        <section class="search-section">
-            <form action="{{ url_for('index') }}" method="get" class="search-form">
-                <input type="text" name="search_query" placeholder="Search by make or model" value="{{ search_query }}">
-                
-                <div class="select-group">
-                    <label for="sort_by">Sort by:</label>
-                    <select name="sort_by" id="sort_by">
-                        <option value="year" {% if sort_by == 'year' %}selected{% endif %}>Year</option>
-                        <option value="price" {% if sort_by == 'price' %}selected{% endif %}>Price</option>
-                    </select>
-                </div>
+        <form class="form-inline my-3" method="GET" action="{{ url_for('index') }}">
+            <input type="text" name="search_query" class="form-control" placeholder="Search vehicles" value="{{ search_query }}">
+            <select name="sort_by" class="form-control mx-2">
+                <option value="year" {% if sort_by == 'year' %}selected{% endif %}>Year</option>
+                <option value="price" {% if sort_by == 'price' %}selected{% endif %}>Price</option>
+                <option value="make" {% if sort_by == 'make' %}selected{% endif %}>Make</option>
+                <option value="model" {% if sort_by == 'model' %}selected{% endif %}>Model</option>
+            </select>
+            <select name="order" class="form-control mx-2">
+                <option value="ASC" {% if order == 'ASC' %}selected{% endif %}>Ascending</option>
+                <option value="DESC" {% if order == 'DESC' %}selected{% endif %}>Descending</option>
+            </select>
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
 
-                <div class="select-group">
-                    <label for="order">Order:</label>
-                    <select name="order" id="order">
-                        <option value="ASC" {% if order == 'ASC' %}selected{% endif %}>Ascending</option>
-                        <option value="DESC" {% if order == 'DESC' %}selected{% endif %}>Descending</option>
-                    </select>
-                </div>
-
-                <button type="submit" class="submit-button">Search & Apply Filters</button>
-            </form>
-        </section>
-
-        <section class="cars-section">
-            <h2>Available Cars</h2>
-            <div class="car-list">
-                {% for car in cars %}
-                    <div class="car">
-                        <h3>{{ car.make }} {{ car.model }}</h3>
-                        <p>Year: {{ car.year }}</p>
-                        <p>Price: ${{ car.price }}</p>
-                        <a href="{{ url_for('add_to_wishlist', car_id=car.id) }}" class="wishlist-button">Add to Wishlist</a>
+        <div class="row">
+            {% for vehicle in vehicles %}
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ vehicle.make }} {{ vehicle.model }}</h5>
+                            <p class="card-text">Year: {{ vehicle.year }}</p>
+                            <p class="card-text">Price: ${{ vehicle.price }}</p>
+                            <a href="{{ url_for('vehicle_details', vehicle_id=vehicle.vehicle_id) }}" class="btn btn-info">View Details</a>
+                            <a href="{{ url_for('add_to_wishlist', vehicle_id=vehicle.vehicle_id) }}" class="btn btn-success">Add to Wishlist</a>
+                        </div>
                     </div>
-                {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-light text-center text-lg-start">
+        <div class="container p-4">
+            <div class="text-center">
+                <h5 class="text-uppercase">Car Showroom</h5>
+                <p>&copy; 2024 Car Showroom. All Rights Reserved.</p>
             </div>
-        </section>
-
-        {% if 'username' in session and session['username'] == 'admin' %}
-            <section class="admin-section">
-                <a href="{{ url_for('add_car') }}" class="admin-button">Add New Car</a>
-            </section>
-        {% endif %}
-    </main>
-
-    <footer>
-        <div class="container">
-            <p>&copy; 2024 Car Showroom. All rights reserved.</p>
         </div>
     </footer>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            setTimeout(function() {
-                const flashes = document.querySelectorAll('.flashes');
-                flashes.forEach(flash => flash.style.display = 'none');
-            }, 5000); // Dismiss flash messages after 5 seconds
-        });
-    </script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
