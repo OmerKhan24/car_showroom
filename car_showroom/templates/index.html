@@ -1,186 +1,268 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Luxury Car Showroom</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&family=Montserrat:wght@300;500;700&display=swap" rel="stylesheet">
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;500;700&display=swap"
+      rel="stylesheet"
+    />
     <style>
-        body {
-            font-family: 'Lora', serif;
-            background-color: #f5f5f5;
-        }
-        header {
-            background-color: #2c3e50; /* Dark navy blue */
-        }
-        .nav-link {
-            color: #ecf0f1 !important; /* Light gray */
-        }
-        .nav-link:hover {
-            color: #bdc3c7 !important; /* Lighter gray */
-        }
-        .carousel-item img {
-            height: 400px; /* Fixed height for carousel images */
-            object-fit: cover;
-            width: 100%; /* Ensure the image takes the full width */
-        }
-        .intro {
-            background-color: #e74c3c; /* Red */
-            color: white;
-            padding: 30px 0;
-            border-radius: 10px;
-            margin-bottom: 30px;
-        }
-        .intro h2 {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 700;
-        }
-        .card {
-            border: none;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-        .footer {
-            background-color: #34495e; /* Dark gray */
-            color: white;
-            padding: 20px 0;
-        }
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #f8f9fa;
+        color: #333;
+      }
+
+      header {
+        background: linear-gradient(135deg, #1c1c1c, #434343);
+        color: #fff;
+        padding: 1.5rem 0;
+        text-align: center;
+      }
+
+      h1 {
+        font-family: "Playfair Display", serif;
+      }
+
+      .nav-link {
+        color: #ecf0f1 !important;
+        text-decoration: none;
+        transition: color 0.3s ease;
+      }
+      .nav-link:hover {
+        color: #e67e22 !important;
+      }
+
+      .intro {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: #e67e22;
+        color: #fff;
+        margin-bottom: 2rem;
+        border-radius: 10px;
+      }
+
+      .carousel-item img {
+        width: 100%;
+        height: 550px;
+        object-fit: cover;
+      }
+
+      .card {
+        border: none;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s;
+      }
+
+      .card:hover {
+        transform: translateY(-5px);
+      }
+
+      .btn-primary {
+        background-color: #e67e22;
+        border: none;
+      }
+
+      .btn-primary:hover {
+        background-color: #d35400;
+      }
+
+      footer {
+        background: #1c1c1c;
+        color: #bbb;
+        padding: 2rem 0;
+        text-align: center;
+      }
+
+      footer a {
+        color: #e67e22;
+      }
+
+      footer a:hover {
+        color: #d35400;
+      }
+
+      .alert{
+        margin: 0 auto;
+        max-width: 600px;
+      }
     </style>
-</head>
-<body>
-    <!-- Header -->
-    <header class="text-white">
-        <div class="container d-flex justify-content-between align-items-center py-3">
-            <h1 class="h4">Luxury Car Showroom</h1>
-            <nav>
-                <ul class="nav">
-                    {% if 'username' in session %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('wishlist') }}">Wishlist</a>
-                        </li>
-                        {% if 'username' in session and session['username'] == 'admin' %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('add_vehicle') }}">Add Vehicle</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('view_test_drives') }}">View Test Drives</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ url_for('view_inquiries') }}">View Inquiries</a>  <!-- New link -->
-                            </li>
-                        {% endif %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
-                        </li>
-                    {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('login') }}">Login</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('signup') }}">Sign Up</a>
-                        </li>
-                    {% endif %}
-                </ul>
-            </nav>
-        </div>
+  </head>
+  <body>
+    <header>
+      <h1>Luxury Car Showroom</h1>
+      <nav>
+        <ul class="nav justify-content-center">
+            {% if 'username' in session %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('wishlist') }}">Wishlist</a>
+                </li>
+                {% if session['username'] == 'admin' %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('add_vehicle') }}">Add Vehicle</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('view_test_drives') }}">Test Drives</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('view_inquiries') }}">Inquiries</a>
+                    </li>
+                {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                </li>
+            {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('signup') }}">Sign Up</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    
     </header>
 
-    <!-- Introduction Section -->
-    <div class="container my-4 intro text-center">
-        <h2>Welcome to Our Luxury Car Showroom</h2>
-        <p>We bring you the highest quality vehicles, handpicked for your driving pleasure. Experience excellence and style in every ride!</p>
-    </div>
+    <section class="intro">
+      <h2>Welcome to Our Luxury Car Showroom</h2>
+      <p>
+        Experience the pinnacle of automotive excellence with our handpicked
+        selection of luxury vehicles.
+      </p>
+    </section>
 
-    <!-- Slideshow Section -->
-    <div id="vehicleCarousel" class="carousel slide" data-ride="carousel" data-interval="3000"> <!-- Added data-interval for automatic cycling -->
-        <div class="carousel-inner">
-            <div class="carousel-item active">
-                <img src="{{ url_for('static', filename='img/jeff-smith-Wg-2kBVND3c-unsplash.jpg') }}" class="d-block w-100" alt="Car Image 1">
-            </div>
-            <div class="carousel-item">
-                <img src="{{ url_for('static', filename='img/michael-jasmund-aUQzKoMcWh4-unsplash.jpg') }}" class="d-block w-100" alt="Car Image 2">
-            </div>
-            <div class="carousel-item">
-                <img src="{{ url_for('static', filename='img/patrick-langwallner-5UXeieG7YI4-unsplash.jpg') }}" class="d-block w-100" alt="Car Image 3">
-            </div>
-            <div class="carousel-item">
-                <img src="{{ url_for('static', filename='img/tim-trad-CLm3pWXrS9Q-unsplash.jpg') }}" class="d-block w-100" alt="Car Image 4">
-            </div>
-            <div class="carousel-item">
-                <img src="{{ url_for('static', filename='img/why-kei-8e2gal_GIE8-unsplash.jpg') }}" class="d-block w-100" alt="Car Image 5">
-            </div>
-        </div>
-        <a class="carousel-control-prev" href="#vehicleCarousel" role="button" data-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="sr-only">Previous</span>
-        </a>
-        <a class="carousel-control-next" href="#vehicleCarousel" role="button" data-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="sr-only">Next</span>
-        </a>
-    </div>
-
-    <div class="container">
-        <h1 class="mt-4 text-center">Available Vehicles</h1>
-
-        <!-- Flash messages -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-          {% if messages %}
-            <div class="my-3">
-              {% for category, message in messages %}
-                <div class="alert alert-{{ category }}">{{ message }}</div>
-              {% endfor %}
-            </div>
-          {% endif %}
-        {% endwith %}
-
-        <form class="form-inline my-3" method="GET" action="{{ url_for('index') }}">
-            <input type="text" name="search_query" class="form-control" placeholder="Search vehicles" value="{{ search_query }}">
-            <select name="sort_by" class="form-control mx-2">
-                <option value="year" {% if sort_by == 'year' %}selected{% endif %}>Year</option>
-                <option value="price" {% if sort_by == 'price' %}selected{% endif %}>Price</option>
-                <option value="make" {% if sort_by == 'make' %}selected{% endif %}>Make</option>
-                <option value="model" {% if sort_by == 'model' %}selected{% endif %}>Model</option>
-            </select>
-            <select name="order" class="form-control mx-2">
-                <option value="ASC" {% if order == 'ASC' %}selected{% endif %}>Ascending</option>
-                <option value="DESC" {% if order == 'DESC' %}selected{% endif %}>Descending</option>
-            </select>
-            <button type="submit" class="btn btn-danger">Search</button>
-        </form>
-
-        <div class="row">
-            {% for vehicle in vehicles %}
-                <div class="col-md-4">
-                    <div class="card mb-4">
-                        <img src="{{ url_for('static', filename='img/' + vehicle.image) }}" class="card-img-top" alt="{{ vehicle.make }} {{ vehicle.model }}">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ vehicle.make }} {{ vehicle.model }}</h5>
-                            <p class="card-text">Year: {{ vehicle.year }}</p>
-                            <p class="card-text">Price: ${{ vehicle.price }}</p>
-                            <a href="{{ url_for('vehicle_details', vehicle_id=vehicle.vehicle_id) }}" class="btn btn-info">View Details</a>
-                            <a href="{{ url_for('add_to_wishlist', vehicle_id=vehicle.vehicle_id) }}" class="btn btn-success">Add to Wishlist</a>
-                        </div>
-                    </div>
-                </div>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="my-3">
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
             {% endfor %}
         </div>
-        
+    {% endif %}
+    {% endwith %}
+
+    <div
+      id="vehicleCarousel"
+      class="carousel slide mb-5"
+      data-bs-ride="carousel"
+    >
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+          <img
+            src="{{ url_for('static', filename='img/car1.jpg') }}"
+            alt="Car 1"
+          />
+        </div>
+        <div class="carousel-item">
+          <img
+            src="{{ url_for('static', filename='img/car2.jpg') }}"
+            alt="Car 2"
+          />
+        </div>
+        <div class="carousel-item">
+          <img
+            src="{{ url_for('static', filename='img/car4.jpg') }}"
+            alt="Car 2"
+          />
+        </div>
+        <div class="carousel-item">
+          <img
+            src="{{ url_for('static', filename='img/car3.jpg') }}"
+            alt="Car 2"
+          />
+        </div>
+        <div class="carousel-item">
+          <img
+            src="{{ url_for('static', filename='img/car5.jpg') }}"
+            alt="Car 2"
+          />
+        </div>
+        <div class="carousel-item">
+          <img
+            src="{{ url_for('static', filename='img/car6.jpg') }}"
+            alt="Car 2"
+          />
+        </div>
+        <!-- Add more carousel items as needed -->
+      </div>
+      <button
+        class="carousel-control-prev"
+        type="button"
+        data-bs-target="#vehicleCarousel"
+        data-bs-slide="prev"
+      >
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button
+        class="carousel-control-next"
+        type="button"
+        data-bs-target="#vehicleCarousel"
+        data-bs-slide="next"
+      >
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
     </div>
 
-    <!-- Footer -->
-    <footer class="footer text-center">
-        <div class="container p-4">
-            <div class="text-center">
-                <h5 class="text-uppercase">Luxury Car Showroom</h5>
-                <p>&copy; 2024 Luxury Car Showroom. All Rights Reserved.</p>
+    <div class="container my-5">
+      <h1 class="text-center mb-4">Latest Vehicles</h1>
+      <div class="row">
+        {% for vehicle in vehicles %}
+        <div class="col-md-4">
+          <div class="card">
+            <img
+              src="{{ url_for('static', filename='img/' + vehicle.image) }}"
+              class="card-img-top"
+              alt="{{ vehicle.make }} {{ vehicle.model }}"
+            />
+            <div class="card-body text-center">
+              <h5 class="card-title">{{ vehicle.make }} {{ vehicle.model }}</h5>
+              <p class="card-text">
+                Year: {{ vehicle.year }} | Price: ${{ vehicle.price }}
+              </p>
+              <a
+                href="{{ url_for('vehicle_details', vehicle_id=vehicle.vehicle_id) }}"
+                class="btn btn-primary btn-sm"
+                >View Details</a
+              >
+              <a
+                href="{{ url_for('add_to_wishlist', vehicle_id=vehicle.vehicle_id) }}"
+                class="btn btn-outline-secondary btn-sm"
+                >Add to Wishlist</a
+              >
             </div>
+          </div>
         </div>
+        {% endfor %}
+      </div>
+      <div class="text-center">
+        <a href="{{ url_for('show_all_cars') }}" class="btn btn-primary mt-4"
+          >Show All Cars</a
+        >
+      </div>
+    </div>
+
+    <footer>
+      <p>&copy; 2024 Luxury Car Showroom. All Rights Reserved.</p>
+      <p>
+        Follow us on:
+        <a href="#"><i class="fab fa-instagram"></i> Instagram</a> |
+        <a href="#"><i class="fab fa-facebook-f"></i> Facebook</a>
+      </p>
     </footer>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
 </html>

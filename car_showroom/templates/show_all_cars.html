@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>All Cars - Luxury Car Showroom</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <style>
+      /* Unified styles for the whole site */
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #f8f9fa;
+        color: #333;
+      }
+      header {
+        background: linear-gradient(135deg, #1c1c1c, #434343);
+        color: #fff;
+        padding: 1.5rem 0;
+        text-align: center;
+      }
+      .nav-link {
+        color: #f8f9fa;
+        margin: 0 1rem;
+        font-weight: 500;
+        transition: color 0.3s;
+        text-decoration: none;
+      }
+      .nav-link:hover {
+        color: #e67e22;
+      }
+      h1 {
+        font-family: "Playfair Display", serif;
+      }
+      .intro {
+        background-color: #e67e22;
+        color: white;
+        padding: 2rem;
+        text-align: center;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+      .carousel-item img {
+        height: 400px;
+        object-fit: cover;
+        filter: brightness(0.8);
+        transition: transform 0.5s ease;
+      }
+      .carousel-item img:hover {
+        transform: scale(1.05);
+      }
+      .card {
+        border: none;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+      }
+      .card img {
+        border-bottom: 1px solid #ddd;
+        transition: transform 0.3s ease;
+      }
+      .card:hover img {
+        transform: scale(1.05);
+      }
+
+      .btn-info {
+        background-color: #fad85d;
+        border: none;
+        transition: background-color 0.3s ease;
+      }
+      .btn:hover {
+        background-color: #d35400;
+      }
+      .alert {
+        font-size: 1rem;
+        margin-top: 20px;
+      }
+
+      footer {
+            background: #1c1c1c;
+            color: #bbb;
+            padding: 2rem 0;
+            text-align: center;
+            margin-top: auto;
+        }
+        footer a {
+            color: #e67e22;
+        }
+        footer a:hover {
+            color: #d35400;
+        }
+    </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <h1>Luxury Car Showroom</h1>
+    <nav>
+      <ul class="nav justify-content-center">
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">Home</a></li>
+        {% if 'username' in session %}
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('wishlist') }}">Wishlist</a></li>
+          {% if session['username'] == 'admin' %}
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('add_vehicle') }}">Add Vehicle</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('view_test_drives') }}">View Test Drives</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('view_inquiries') }}">View Inquiries</a></li>
+          {% endif %}
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Logout</a></li>
+        {% else %}
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Login</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('signup') }}">Sign Up</a></li>
+        {% endif %}
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Display all vehicles -->
+  <div class="container my-5">
+    <h1 class="text-center">Our Entire Collection</h1>
+    <div class="row">
+      {% for vehicle in vehicles %}
+        <div class="col-md-4 mb-4">
+          <div class="card">
+            <img src="{{ url_for('static', filename='img/' + vehicle.image) }}" class="card-img-top" alt="{{ vehicle.make }} {{ vehicle.model }}">
+            <div class="card-body text-center">
+              <h5 class="card-title">{{ vehicle.make }} {{ vehicle.model }}</h5>
+              <p class="card-text">Year: {{ vehicle.year }} | Price: ${{ vehicle.price }}</p>
+              <a href="{{ url_for('vehicle_details', vehicle_id=vehicle.vehicle_id) }}" class="btn btn-info btn-sm">View Details</a>
+              <a href="{{ url_for('add_to_wishlist', vehicle_id=vehicle.vehicle_id) }}" class="btn btn-success btn-sm">Add to Wishlist</a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2024 Luxury Car Showroom. All Rights Reserved.</p>
+    <p>
+      Follow us on:
+      <a href="#"><i class="fab fa-instagram"></i> Instagram</a> |
+      <a href="#"><i class="fab fa-facebook-f"></i> Facebook</a>
+    </p>
+  </footer>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

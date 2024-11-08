@@ -21,8 +21,37 @@ db_config = {
 ADMIN_USERNAME = 'admin'  # Admin username for admin-only routes
 
 # Index Route - Displays available vehicles
+# Index Route - Displays latest 8 vehicles
 @app.route('/')
 def index():
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor(dictionary=True)
+
+        # Fetch the latest 8 vehicles, including their images
+        query = """
+        SELECT Vehicle.*, Car.image 
+        FROM Vehicle 
+        JOIN Car ON Vehicle.vehicle_id = Car.vehicle_id 
+        ORDER BY Vehicle.vehicle_id DESC
+        LIMIT 8
+        """
+        cursor.execute(query)
+        vehicles = cursor.fetchall()
+
+        cursor.close()
+        conn.close()
+
+        return render_template('index.html', vehicles=vehicles)
+
+    except mysql.connector.Error as err:
+        flash(f"Database error: {err}", 'danger')
+        return render_template('error.html')
+
+
+# Route to display all vehicles with search and filter options
+@app.route('/show_all_cars')
+def show_all_cars():
     search_query = request.args.get('search_query', '')
     sort_by = request.args.get('sort_by', 'year')
     order = request.args.get('order', 'ASC').upper()
@@ -36,7 +65,7 @@ def index():
         conn = mysql.connector.connect(**db_config)
         cursor = conn.cursor(dictionary=True)
 
-        # Fetch all vehicles or filter based on search query, including image
+        # Fetch all vehicles with search and sorting options, including image
         if search_query:
             query = """
             SELECT Vehicle.*, Car.image 
@@ -56,11 +85,11 @@ def index():
             cursor.execute(query)
 
         vehicles = cursor.fetchall()
-        print(vehicles)
+
         cursor.close()
         conn.close()
 
-        return render_template('index.html', vehicles=vehicles, search_query=search_query, sort_by=sort_by, order=order)
+        return render_template('show_all_cars.html', vehicles=vehicles, search_query=search_query, sort_by=sort_by, order=order)
 
     except mysql.connector.Error as err:
         flash(f"Database error: {err}", 'danger')

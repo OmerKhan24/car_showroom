@@ -4,44 +4,71 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Inquiries - Admin</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet" />
     <style>
         html, body {
             height: 100%;
             margin: 0;
         }
         body {
+            font-family: "Inter", sans-serif;
             display: flex;
             flex-direction: column;
+            background-color: #f8f9fa;
         }
-        .content {
-            flex: 1; /* This makes the content take up available space */
+        header {
+            background: linear-gradient(135deg, #1c1c1c, #434343);
+        color: #fff;
+        padding: 1.5rem 0;
+        text-align: center;
         }
-        footer {
-            background: #f8f9fa; /* Optional: To match your existing footer color */
+        .nav-link {
+            color: #ecf0f1 !important;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        .nav-link:hover {
+            color: #e67e22 !important;
+        }
+        .table th, .table td {
+            padding: 1rem;
+            vertical-align: middle;
+        }
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: #f2f2f2;
+        }
+        .footer {
+            background: #1c1c1c;
+            color: #bbb;
+            padding: 2rem 0;
+            text-align: center;
+            margin-top: auto;
+        }
+        footer a {
+            color: #e67e22;
+        }
+        footer a:hover {
+            color: #d35400;
         }
     </style>
 </head>
 <body>
+
     <!-- Header -->
-    <header class="bg-primary text-white">
-        <div class="container d-flex justify-content-between align-items-center py-3">
-            <h1 class="h4">Admin Dashboard</h1>
-            <nav>
-                <ul class="nav">
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="{{ url_for('index') }}">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="{{ url_for('logout') }}">Logout</a>
-                    </li>
-                </ul>
-            </nav>
-        </div>
+    <header>
+        <h1 class="h4">Admin Dashboard</h1>
+        <nav>
+            <ul class="nav justify-content-center">
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Logout</a></li>
+            </ul>
+        </nav>
     </header>
 
-    <div class="container my-4 content">
-        <h2 class="mb-4">Inquiries</h2>
+    <!-- Content -->
+    <div class="container my-4 flex-grow-1">
+        <h2 class="mb-4 text-center">Inquiries</h2>
 
         <!-- Flash messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -85,15 +112,16 @@
     </div>
 
     <!-- Footer -->
-    <footer class="text-center text-lg-start">
-        <div class="container p-4">
-            <div class="text-center">
-                <h5 class="text-uppercase">Car Showroom</h5>
-                <p>&copy; {{ current_year }} Car Showroom. All Rights Reserved.</p>
-            </div>
-        </div>
+    <footer class="footer">
+        <p>&copy; 2024 Luxury Car Showroom. All Rights Reserved.</p>
+        <p>
+            Follow us on:
+            <a href="#"><i class="fab fa-instagram"></i> Instagram</a> |
+            <a href="#"><i class="fab fa-facebook-f"></i> Facebook</a>
+        </p>
     </footer>
 
+    <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
