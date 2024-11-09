@@ -39,19 +39,71 @@
         color: #e67e22 !important;
       }
 
-      .intro {
-        text-align: center;
-        padding: 4rem 2rem;
-        background: #e67e22;
-        color: #fff;
-        margin-bottom: 2rem;
-        border-radius: 10px;
-      }
+/* Carousel Container */
+.carousel-container {
+  position: relative;
+}
 
-      .carousel-item img {
-        width: 100%;
-        height: 550px;
-        object-fit: cover;
+/* Styling the intro section */
+.intro {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  padding: 5rem 2rem;
+  background: rgba(0, 0, 0, 0.5); /* Dark background with some transparency */
+  color: #fff;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  z-index: 10; /* Keeps the intro section on top of the carousel */
+  width: 100%;
+}
+
+.intro h2 {
+  font-family: "Playfair Display", serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.intro p {
+  font-family: "Inter", sans-serif;
+  font-size: 1.2rem;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.intro .btn-light {
+  background-color: #fad85d;
+  color: #1c1c1c;
+  padding: 12px 30px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 50px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.intro .btn-light:hover {
+  background-color: #e67e22;
+  color: #fff;
+  transform: scale(1.05);
+}
+
+/* Carousel images styling */
+.carousel-item img {
+  width: 100%;
+  height: 550px;
+  object-fit: cover;
+}
+
+
+      .card-img-top {
+        height: 250px; /* Adjust as needed */
+        width: 100%; /* Ensures full width */
+        object-fit: cover; /* Makes the image fill the given space without distortion */
       }
 
       .card {
@@ -74,6 +126,81 @@
         background-color: #d35400;
       }
 
+      /* Our Vision Section */
+      .our-vision {
+        background-color: #f8f9fa;
+        padding: 60px 0;
+        text-align: center;
+        color: #333;
+      }
+
+      .our-vision h2 {
+        font-size: 2.5rem;
+        font-family: "Playfair Display", serif;
+        margin-bottom: 20px;
+      }
+
+      .our-vision p {
+        font-size: 1.2rem;
+        line-height: 1.6;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      /* Testimonials Section */
+      .testimonials {
+        background-color: #fff;
+        padding: 60px 0;
+      }
+
+      .testimonials h2 {
+        font-size: 2.5rem;
+        font-family: "Playfair Display", serif;
+        margin-bottom: 40px;
+      }
+
+      .card {
+        border: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s;
+      }
+
+      .card:hover {
+        transform: translateY(-5px);
+      }
+
+      .card-body {
+        text-align: center;
+      }
+
+      .card-text {
+        font-size: 1rem;
+        color: #333;
+      }
+
+      .card-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-top: 10px;
+      }
+
+      .card-subtitle {
+        font-size: 1rem;
+        color: #777;
+        margin-top: 5px;
+      }
+
+      @media (max-width: 768px) {
+        .card {
+          margin-bottom: 30px;
+        }
+
+        .testimonials h2 {
+          font-size: 2rem;
+        }
+      }
+
       footer {
         background: #1c1c1c;
         color: #bbb;
@@ -89,7 +216,7 @@
         color: #d35400;
       }
 
-      .alert{
+      .alert {
         margin: 0 auto;
         max-width: 600px;
       }
@@ -100,118 +227,122 @@
       <h1>Luxury Car Showroom</h1>
       <nav>
         <ul class="nav justify-content-center">
-            {% if 'username' in session %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('wishlist') }}">Wishlist</a>
-                </li>
-                {% if session['username'] == 'admin' %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('add_vehicle') }}">Add Vehicle</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('view_test_drives') }}">Test Drives</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('view_inquiries') }}">Inquiries</a>
-                    </li>
-                {% endif %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
-                </li>
-            {% else %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('login') }}">Login</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('signup') }}">Sign Up</a>
-                </li>
-            {% endif %}
+          {% if 'username' in session %}
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('wishlist') }}">Wishlist</a>
+          </li>
+          {% if session['username'] == 'admin' %}
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('add_vehicle') }}"
+              >Add Vehicle</a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('view_test_drives') }}"
+              >Test Drives</a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('view_inquiries') }}"
+              >Inquiries</a
+            >
+          </li>
+          {% endif %}
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+          </li>
+          {% else %}
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('signup') }}">Sign Up</a>
+          </li>
+          {% endif %}
         </ul>
-    </nav>
-    
+      </nav>
     </header>
 
-    <section class="intro">
-      <h2>Welcome to Our Luxury Car Showroom</h2>
-      <p>
-        Experience the pinnacle of automotive excellence with our handpicked
-        selection of luxury vehicles.
-      </p>
-    </section>
-
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        <div class="my-3">
-            {% for category, message in messages %}
-            <div class="alert alert-{{ category }}">{{ message }}</div>
-            {% endfor %}
-        </div>
-    {% endif %}
-    {% endwith %}
-
-    <div
-      id="vehicleCarousel"
-      class="carousel slide mb-5"
-      data-bs-ride="carousel"
-    >
-      <div class="carousel-inner">
-        <div class="carousel-item active">
-          <img
-            src="{{ url_for('static', filename='img/car1.jpg') }}"
-            alt="Car 1"
-          />
-        </div>
-        <div class="carousel-item">
-          <img
-            src="{{ url_for('static', filename='img/car2.jpg') }}"
-            alt="Car 2"
-          />
-        </div>
-        <div class="carousel-item">
-          <img
-            src="{{ url_for('static', filename='img/car4.jpg') }}"
-            alt="Car 2"
-          />
-        </div>
-        <div class="carousel-item">
-          <img
-            src="{{ url_for('static', filename='img/car3.jpg') }}"
-            alt="Car 2"
-          />
-        </div>
-        <div class="carousel-item">
-          <img
-            src="{{ url_for('static', filename='img/car5.jpg') }}"
-            alt="Car 2"
-          />
-        </div>
-        <div class="carousel-item">
-          <img
-            src="{{ url_for('static', filename='img/car6.jpg') }}"
-            alt="Car 2"
-          />
-        </div>
-        <!-- Add more carousel items as needed -->
-      </div>
-      <button
-        class="carousel-control-prev"
-        type="button"
-        data-bs-target="#vehicleCarousel"
-        data-bs-slide="prev"
-      >
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Previous</span>
-      </button>
-      <button
-        class="carousel-control-next"
-        type="button"
-        data-bs-target="#vehicleCarousel"
-        data-bs-slide="next"
-      >
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Next</span>
-      </button>
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %}
+    <div class="my-3">
+      {% for category, message in messages %}
+      <div class="alert alert-{{ category }}">{{ message }}</div>
+      {% endfor %}
     </div>
+    {% endif %} {% endwith %}
+
+    <!-- Carousel and Intro Section -->
+    <section class="carousel-container">
+      <div
+        id="vehicleCarousel"
+        class="carousel slide mb-5"
+        data-bs-ride="carousel"
+      >
+        <div class="carousel-inner">
+          <div class="carousel-item active">
+            <img
+              src="{{ url_for('static', filename='img/car1.jpg') }}"
+              alt="Car 1"
+            />
+          </div>
+          <div class="carousel-item">
+            <img
+              src="{{ url_for('static', filename='img/car2.jpg') }}"
+              alt="Car 2"
+            />
+          </div>
+          <div class="carousel-item">
+            <img
+              src="{{ url_for('static', filename='img/car12.jpg') }}"
+              alt="Car 3"
+            />
+          </div>
+          <div class="carousel-item">
+            <img
+              src="{{ url_for('static', filename='img/car3.jpg') }}"
+              alt="Car 4"
+            />
+          </div>
+          <div class="carousel-item">
+            <img
+              src="{{ url_for('static', filename='img/car5.jpg') }}"
+              alt="Car 5"
+            />
+          </div>
+        </div>
+        <button
+          class="carousel-control-prev"
+          type="button"
+          data-bs-target="#vehicleCarousel"
+          data-bs-slide="prev"
+        >
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button
+          class="carousel-control-next"
+          type="button"
+          data-bs-target="#vehicleCarousel"
+          data-bs-slide="next"
+        >
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+      </div>
+
+      <!-- Intro Section Overlaid on Carousel -->
+      <section class="intro">
+        <h2>Welcome to Our Luxury Car Showroom</h2>
+        <p>
+          Experience the pinnacle of automotive excellence with our handpicked
+          selection of luxury vehicles.
+        </p>
+        <a href="{{ url_for('show_all_cars') }}" class="btn btn-light">
+          Explore Our Collection
+        </a>
+      </section>
+    </section>
 
     <div class="container my-5">
       <h1 class="text-center mb-4">Latest Vehicles</h1>
@@ -250,6 +381,69 @@
         >
       </div>
     </div>
+
+    <!-- Our Vision Section -->
+    <section
+      class="our-vision text-center py-5"
+      style="background-color: #f8f9fa"
+    >
+      <div class="container">
+        <h2 class="mb-4">Our Vision</h2>
+        <p>
+          At Luxury Car Showroom, we aim to provide an unparalleled experience
+          by offering the most exclusive collection of luxury vehicles. Our
+          vision is to bring you the best in automotive craftsmanship, design,
+          and technology, ensuring that each car in our showroom delivers
+          performance, elegance, and sophistication.
+        </p>
+      </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials py-5">
+      <div class="container">
+        <h2 class="text-center mb-4">What Our Clients Say</h2>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="card">
+              <div class="card-body">
+                <p class="card-text">
+                  "The service at Luxury Car Showroom was exceptional! I found
+                  my dream car and the entire process was seamless."
+                </p>
+                <h5 class="card-title">John Doe</h5>
+                <p class="card-subtitle mb-2 text-muted">Satisfied Customer</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card">
+              <div class="card-body">
+                <p class="card-text">
+                  "I was impressed with the quality and selection of cars. Truly
+                  a premium experience from start to finish!"
+                </p>
+                <h5 class="card-title">Sarah Smith</h5>
+                <p class="card-subtitle mb-2 text-muted">Happy Buyer</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card">
+              <div class="card-body">
+                <p class="card-text">
+                  "This is the best place for luxury cars! The staff was
+                  friendly and professional, and the car I purchased is
+                  top-notch."
+                </p>
+                <h5 class="card-title">Michael Johnson</h5>
+                <p class="card-subtitle mb-2 text-muted">Long-Term Client</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <footer>
       <p>&copy; 2024 Luxury Car Showroom. All Rights Reserved.</p>
