@@ -18,13 +18,23 @@
         font-family: "Inter", sans-serif;
         background-color: #f8f9fa;
         color: #333;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
       }
+
       header {
         background: linear-gradient(135deg, #1c1c1c, #434343);
         color: #fff;
         padding: 1.5rem 0;
         text-align: center;
+        position: relative;
       }
+
+      header h1 {
+        font-family: "Playfair Display", serif;
+      }
+
       .nav-link {
         color: #f8f9fa;
         margin: 0 1rem;
@@ -32,12 +42,44 @@
         transition: color 0.3s;
         text-decoration: none;
       }
+
       .nav-link:hover {
         color: #e67e22;
       }
-      h1 {
-        font-family: "Playfair Display", serif;
+
+      .btn-container {
+        position: absolute;
+        top: 35px;
+        right: 20px;
+        display: flex;
+        gap: 0.75rem;
+        z-index: 10;
       }
+
+      .btn-custom {
+        display: flex;
+        align-items: center;
+        padding: 6px 12px;
+        border: 2px solid #e67e22;
+        border-radius: 5px;
+        color: #333;
+        text-decoration: none;
+        font-size: 0.9rem;
+        background-color: #fff;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .btn-custom i {
+        margin-right: 5px;
+      }
+
+      .btn-custom:hover {
+        background-color: #e67e22;
+        color: white;
+        border-color: #d35400;
+      }
+
       .intro {
         background-color: #e67e22;
         color: white;
@@ -46,41 +88,41 @@
         border-radius: 10px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
       }
+
       .carousel-item img {
         height: 400px;
         object-fit: cover;
         filter: brightness(0.8);
         transition: transform 0.5s ease;
       }
+
       .carousel-item img:hover {
         transform: scale(1.05);
       }
-/* Slightly larger buttons */
-.btn-success,
-.btn-info {
-  padding: 10px 18px; /* Slightly increase padding */
-  font-size: 1rem; /* Slightly increase font size */
-}
 
-/* Success button (Add to Wishlist) */
-.btn-success {
-  background-color: #36aefe;
-  border: none;
-}
+      .btn-success,
+      .btn-info {
+        padding: 10px 18px;
+        font-size: 1rem;
+      }
 
-.btn-success:hover {
-  background-color: #7dcdff;
-}
+      .btn-success {
+        background-color: #36aefe;
+        border: none;
+      }
 
-/* Info button (View Details) */
-.btn-info {
-  background-color: #e67e22;
-  border: none;
-}
+      .btn-success:hover {
+        background-color: #7dcdff;
+      }
 
-.btn-info:hover {
-  background-color: #e7ab76;
-}
+      .btn-info {
+        background-color: #e67e22;
+        border: none;
+      }
+
+      .btn-info:hover {
+        background-color: #e7ab76;
+      }
 
       .alert {
         font-size: 1rem;
@@ -88,70 +130,82 @@
       }
 
       footer {
-            background: #1c1c1c;
-            color: #bbb;
-            padding: 2rem 0;
-            text-align: center;
-            margin-top: auto;
-        }
-        footer a {
-            color: #e67e22;
-        }
-        footer a:hover {
-            color: #d35400;
-        }
+        background: #1c1c1c;
+        color: #bbb;
+        padding: 2rem 0;
+        text-align: center;
+        margin-top: auto;
+      }
 
-      /* Search and filter form styles */
+      footer a {
+        color: #e67e22;
+      }
+
+      footer a:hover {
+        color: #d35400;
+      }
+
       .filter-form {
         background-color: #ffffff;
         border-radius: 10px;
         padding: 2rem;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        margin-bottom: 2rem;
+        margin-bottom: 1rem;
       }
+
       .filter-form input,
       .filter-form select,
       .filter-form button {
         width: 100%;
         border-radius: 5px;
         box-shadow: none;
-        margin: 5px;
+        margin-bottom: 5px;
+        padding: 12px;
       }
+
       .filter-form input:focus,
       .filter-form select:focus,
       .filter-form button:focus {
         box-shadow: 0 0 5px rgba(62, 123, 255, 0.8);
       }
+
       .filter-form button {
         background-color: #e67e22;
         border: none;
         color: white;
+        padding: 12px 0;
         transition: background-color 0.3s ease;
       }
+
       .filter-form button:hover {
         background-color: #d35400;
       }
 
-      /* Fixing the form layout to have inputs and button in one row */
       .filter-form .row {
         display: flex;
-        align-items: center;
-      }
-
-      /* For individual form controls */
-      .filter-form .col-md-3,
-      .filter-form .col-md-6 {
-        padding: 0 10px;
+        flex-wrap: wrap;
+        justify-content: space-between;
       }
 
       .filter-form .col-md-3 {
+        padding: 0 10px;
+        flex: 1;
         max-width: 270px;
       }
+
       .filter-form .col-md-3-1 {
+        padding: 0 10px;
+        flex: 1;
         max-width: 430px;
       }
-      .filter-form .col-md-6 {
-        max-width: 350px;
+
+      .card-body {
+        text-align: center;
+      }
+
+      .card-img-top {
+        height: 300px;
+        object-fit: cover;
       }
     </style>
 </head>
@@ -169,13 +223,26 @@
             <li class="nav-item"><a class="nav-link" href="{{ url_for('view_test_drives') }}">View Test Drives</a></li>
             <li class="nav-item"><a class="nav-link" href="{{ url_for('view_inquiries') }}">View Inquiries</a></li>
           {% endif %}
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Logout</a></li>
         {% else %}
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Login</a></li>
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('signup') }}">Sign Up</a></li>
         {% endif %}
       </ul>
     </nav>
+
+    <!-- Login/Signup Buttons -->
+    <div class="btn-container">
+      {% if 'username' in session %}
+      <a href="{{ url_for('logout') }}" class="btn-custom">
+          <i class="fas fa-sign-out-alt"></i> Logout
+      </a>
+      {% else %}
+      <a href="{{ url_for('login') }}" class="btn-custom login">
+          <i class="fas fa-user"></i> Login
+      </a>
+      <a href="{{ url_for('signup') }}" class="btn-custom signup">
+          <i class="fas fa-user-plus"></i> Sign Up
+      </a>
+      {% endif %}
+    </div>
   </header>
 
   <!-- Search and Sort Filters -->
@@ -200,6 +267,18 @@
           <select class="form-control" name="order">
             <option value="ASC" {% if order == 'ASC' %}selected{% endif %}>Ascending</option>
             <option value="DESC" {% if order == 'DESC' %}selected{% endif %}>Descending</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <select class="form-control" name="vehicle_type">
+            <option value="">All Types</option>
+            <option value="suv" {% if vehicle_type == 'suv' %}selected{% endif %}>SUV</option>
+            <option value="hatchback" {% if vehicle_type == 'hatchback' %}selected{% endif %}>Hatchback</option>
+            <option value="sedan" {% if vehicle_type == 'sedan' %}selected{% endif %}>Sedan</option>
+            <option value="sport" {% if vehicle_type == 'sport' %}selected{% endif %}>Sport</option>
+            <option value="convertible" {% if vehicle_type == 'convertible' %}selected{% endif %}>Convertible</option>
+            <option value="coupe" {% if vehicle_type == 'coupe' %}selected{% endif %}>Coupe</option>
+            <option value="bike" {% if vehicle_type == 'bike' %}selected{% endif %}>Bike</option>
           </select>
         </div>
         <div class="col-md-3">

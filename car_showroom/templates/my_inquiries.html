@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>View Inquiries - Admin</title>
+    <title>My Inquiries</title>
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
@@ -22,7 +22,7 @@
         height: 100%;
         margin: 0;
       }
-      /* Unified styles for the whole site */
+
       body {
         font-family: "Inter", sans-serif;
         background-color: #f8f9fa;
@@ -97,6 +97,7 @@
       .table-striped tbody tr:nth-of-type(odd) {
         background-color: #f2f2f2;
       }
+
       .footer {
         background: #1c1c1c;
         color: #bbb;
@@ -121,22 +122,12 @@
           <li class="nav-item">
             <a class="nav-link" href="{{ url_for('index') }}">Home</a>
           </li>
-          {% if 'username' in session %}
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('my_inquiries') }}">My Inquiries</a>
+          </li>
           <li class="nav-item">
             <a class="nav-link" href="{{ url_for('wishlist') }}">Wishlist</a>
           </li>
-          {% if session['username'] == 'admin' %}
-          <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('add_vehicle') }}"
-              >Add Vehicle</a
-            >
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('view_test_drives') }}"
-              >View Test Drives</a
-            >
-          </li>
-          {% endif %} {% else %} {% endif %}
         </ul>
       </nav>
 
@@ -159,11 +150,10 @@
 
     <!-- Content -->
     <div class="container my-4 flex-grow-1">
-      <h2 class="mb-4 text-center">Inquiries</h2>
+      <h2 class="mb-4 text-center">My Inquiries</h2>
 
       <!-- Flash messages -->
-      {% with messages = get_flashed_messages(with_categories=true) %} {% if
-      messages %}
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %}
       <div class="my-3">
         {% for category, message in messages %}
         <div class="alert alert-{{ category }}">{{ message }}</div>
@@ -174,48 +164,33 @@
       <table class="table table-striped table-bordered">
         <thead class="thead-dark">
           <tr>
-            <th>Vehicle ID</th>
-            <th>User ID</th>
             <th>Message</th>
-            <th>Date</th>
-            <th>Reply</th>  <!-- Column for Admin's Reply -->
-            <th>Actions</th>
+            <th>Date Submitted</th>
+            <th>Admin Reply</th>
+            <th>Reply Date</th>
           </tr>
         </thead>
         <tbody>
           {% if inquiries %}
             {% for inquiry in inquiries %}
               <tr>
-                <td>{{ inquiry.vehicle_id }}</td>
-                <td>{{ inquiry.user_id }}</td>
                 <td>{{ inquiry.inquiry_text }}</td>
                 <td>{{ inquiry.inquiry_date }}</td>
                 <td>
-                  {% if inquiry.reply %}
-                    <p>{{ inquiry.reply }}</p>  <!-- Show the reply if it exists -->
-                  {% else %}
-                    <form action="{{ url_for('reply_inquiry', inquiry_id=inquiry.inquiry_id) }}" method="POST">
-                      <textarea name="reply" class="form-control" rows="3" required></textarea>
-                      <button type="submit" class="btn btn-primary btn-sm mt-2">Send Reply</button>
-                    </form>
-                  {% endif %}
-                </td>
-                <td>
-                  <!-- Delete button -->
-                  <form action="{{ url_for('delete_inquiry', inquiry_id=inquiry.inquiry_id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this inquiry?');">
-                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                  </form>
-                </td>
+                    {% if inquiry.reply %}
+                      <p>{{ inquiry.reply }}</p>  <!-- Show the reply if it exists -->
+                    {% endif %}
+                  </td>
+                <td>{{ inquiry.reply_date if inquiry.reply_date else 'N/A' }}</td>
               </tr>
             {% endfor %}
           {% else %}
             <tr>
-              <td colspan="6" class="text-center">No inquiries found.</td>
+              <td colspan="4" class="text-center">You have no inquiries yet.</td>
             </tr>
           {% endif %}
         </tbody>
       </table>
-      
     </div>
 
     <!-- Footer -->

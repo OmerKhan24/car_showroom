@@ -52,46 +52,71 @@ def index():
 # Route to display all vehicles with search and filter options
 @app.route('/show_all_cars')
 def show_all_cars():
+    # Get filter parameters from the request
     search_query = request.args.get('search_query', '')
     sort_by = request.args.get('sort_by', 'year')
     order = request.args.get('order', 'ASC').upper()
+    vehicle_type = request.args.get('vehicle_type', '')
 
+    # Define allowed values for filters
     allowed_sort_columns = {'year', 'price', 'make', 'model'}
     allowed_order = {'ASC', 'DESC'}
+    allowed_types = {'suv', 'hatchback', 'sedan', 'sport', 'convertible', 'coupe', 
+                     'bike', 'cruiser', 'touring', 'standard'}
+
+    # Validate sort_by and order parameters
     sort_by = sort_by if sort_by in allowed_sort_columns else 'year'
     order = order if order in allowed_order else 'ASC'
 
     try:
+        # Database connection
         conn = mysql.connector.connect(**db_config)
         cursor = conn.cursor(dictionary=True)
 
-        # Fetch all vehicles with search and sorting options, including image
-        if search_query:
-            query = """
-            SELECT Vehicle.*, Car.image 
-            FROM Vehicle 
-            JOIN Car ON Vehicle.vehicle_id = Car.vehicle_id 
-            WHERE Vehicle.make LIKE %s OR Vehicle.model LIKE %s 
-            ORDER BY {} {}
-            """.format(sort_by, order)
-            cursor.execute(query, (f"%{search_query}%", f"%{search_query}%"))
-        else:
-            query = """
-            SELECT Vehicle.*, Car.image 
-            FROM Vehicle 
-            JOIN Car ON Vehicle.vehicle_id = Car.vehicle_id 
-            ORDER BY {} {}
-            """.format(sort_by, order)
-            cursor.execute(query)
+        # Build dynamic query based on filters
+        query = """
+        SELECT Vehicle.*, Car.image 
+        FROM Vehicle 
+        JOIN Car ON Vehicle.vehicle_id = Car.vehicle_id
+        WHERE 1=1
+        """
+        
+        params = []
 
+        # Apply search filter
+        if search_query:
+            query += " AND (Vehicle.make LIKE %s OR Vehicle.model LIKE %s)"
+            params.extend([f"%{search_query}%", f"%{search_query}%"])
+
+        # Apply vehicle type filter
+        if vehicle_type.lower() in allowed_types:
+            # Add 'Car/' prefix to match database format
+            query += " AND LOWER(vehicle_type) = %s"
+            params.append(f"car/{vehicle_type.lower()}")
+
+        # Sorting
+        query += f" ORDER BY {sort_by} {order}"
+
+        # Execute the query
+        cursor.execute(query, tuple(params))
         vehicles = cursor.fetchall()
 
+        # Close connections
         cursor.close()
         conn.close()
 
-        return render_template('show_all_cars.html', vehicles=vehicles, search_query=search_query, sort_by=sort_by, order=order)
+        # Render the template with filtered results
+        return render_template(
+            'show_all_cars.html',
+            vehicles=vehicles,
+            search_query=search_query,
+            sort_by=sort_by,
+            order=order,
+            vehicle_type=vehicle_type
+        )
 
     except mysql.connector.Error as err:
+        # Handle database errors
         flash(f"Database error: {err}", 'danger')
         return render_template('error.html')
 
@@ -194,6 +219,10 @@ def add_vehicle():
         price = request.form['price']
         description = request.form['description']
         vehicle_type = request.form['vehicle_type']
+        category = request.form['category']
+
+        # Combine vehicle type and category for filtering purposes
+        vehicle_type_with_category = f"{vehicle_type}/{category}"
 
         # Handle the image upload
         if 'image' not in request.files:
@@ -215,9 +244,9 @@ def add_vehicle():
                 conn = mysql.connector.connect(**db_config)
                 cursor = conn.cursor()
 
-                # Insert the vehicle into the Vehicle table
+                # Insert the vehicle into the Vehicle table with the combined vehicle_type
                 query = "INSERT INTO Vehicle (make, model, year, price, description, vehicle_type) VALUES (%s, %s, %s, %s, %s, %s)"
-                cursor.execute(query, (make, model, year, price, description, vehicle_type))
+                cursor.execute(query, (make, model, year, price, description, vehicle_type_with_category))
                 vehicle_id = cursor.lastrowid  # Get the generated vehicle ID
                 conn.commit()  # Commit the transaction for the Vehicle insert
 
@@ -334,11 +363,22 @@ def vehicle_details(vehicle_id):
         """, (vehicle_id,))
         
         vehicle = cursor.fetchone()
+
+        # Fetch installment plans for the specific vehicle
+        cursor.execute("""
+            SELECT downpayment, monthly_installment, interest_rate, total_price, bank_name, time_period
+            FROM installment
+            WHERE vehicle_id = %s
+        """, (vehicle_id,))
+        
+        installments = cursor.fetchall()
+
         cursor.close()
         conn.close()
 
         if vehicle:
-            return render_template('vehicle_details.html', vehicle=vehicle)
+            # Pass both vehicle details and installment plans to the template
+            return render_template('vehicle_details.html', vehicle=vehicle, installments=installments)
         else:
             flash("Vehicle not found.", "danger")
             return redirect(url_for('index'))
@@ -346,6 +386,31 @@ def vehicle_details(vehicle_id):
     except mysql.connector.Error as err:
         flash(f"Database error: {err}", "danger")
         return redirect(url_for('index'))
+
+
+# Route to delete a vehicle (Admin only)
+@app.route('/delete_vehicle/<int:vehicle_id>', methods=['GET'])
+def delete_vehicle(vehicle_id):
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor()
+
+        # Delete the vehicle from the Car table (or related table if necessary)
+        cursor.execute("DELETE FROM Vehicle WHERE vehicle_id = %s", (vehicle_id,))
+        cursor.execute("DELETE FROM Car WHERE vehicle_id = %s", (vehicle_id,))
+
+        conn.commit()
+
+        cursor.close()
+        conn.close()
+
+        flash("Vehicle deleted successfully.", "success")
+        return redirect(url_for('index'))  # Redirect to homepage or vehicle list page
+
+    except mysql.connector.Error as err:
+        flash(f"Database error: {err}", "danger")
+        return redirect(url_for('index'))
+
 
 
 # Schedule Test Drive Route
@@ -376,19 +441,65 @@ def schedule_test_drive(vehicle_id):
         return redirect(url_for('index'))
 
 
+# Route to display the form and add an installment plan
+@app.route('/add_installment/<int:vehicle_id>', methods=['GET', 'POST'])
+def add_installment(vehicle_id):
+    if request.method == 'POST':
+        # Retrieve form data
+        downpayment = request.form.get('downpayment')
+        monthly_installment = request.form.get('monthly_installment')
+        interest_rate = request.form.get('interest_rate')
+        total_price = request.form.get('total_price')
+        bank_name = request.form.get('bank_name')
+        time_period = request.form.get('time_period')
+        
+        try:
+            conn = mysql.connector.connect(**db_config)
+            cursor = conn.cursor()
 
-# View Test Drives Route (Admin Only)
-@app.route('/view_test_drives')
+            # Insert the installment details into the Installment table
+            cursor.execute("""
+                INSERT INTO Installment (vehicle_id, downpayment, monthly_installment, interest_rate, total_price, bank_name, time_period)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+            """, (vehicle_id, downpayment, monthly_installment, interest_rate, total_price, bank_name, time_period))
+            
+            conn.commit()
+            cursor.close()
+            conn.close()
+
+            flash("Installment plan added successfully.", "success")
+            return redirect(url_for('vehicle_details', vehicle_id=vehicle_id))
+
+        except mysql.connector.Error as err:
+            flash(f"Database error: {err}", "danger")
+            return redirect(url_for('vehicle_details', vehicle_id=vehicle_id))
+
+    return render_template('add_installment_plan.html', vehicle_id=vehicle_id)
+
+
+
+@app.route('/view_test_drives', methods=['GET', 'POST'])
 @admin_required
 def view_test_drives():
     try:
         conn = mysql.connector.connect(**db_config)
         cursor = conn.cursor(dictionary=True)
 
-        # Fetch all scheduled test drives
+        if request.method == 'POST':
+            # Update the test drive status
+            testdrive_id = request.form['testdrive_id']
+            new_status = request.form['status']
+            cursor.execute(
+                "UPDATE TestDrive SET status = %s WHERE testdrive_id = %s",
+                (new_status, testdrive_id)
+            )
+            conn.commit()
+            flash('Test drive status updated successfully.', 'success')
+
+        # Fetch all test drives
         cursor.execute("""
-            SELECT User.user_name, Vehicle.make AS vehicle_make, Vehicle.model AS vehicle_model, 
-                   TestDrive.test_drive_date, testDrive.test_drive_time
+            SELECT TestDrive.testdrive_id, User.user_name, Vehicle.make AS vehicle_make, Vehicle.model AS vehicle_model, 
+                   TestDrive.test_drive_date, TestDrive.test_drive_time, TestDrive.status
             FROM TestDrive
             JOIN User ON TestDrive.user_id = User.user_id
             JOIN Vehicle ON TestDrive.vehicle_id = Vehicle.vehicle_id
@@ -399,12 +510,60 @@ def view_test_drives():
         conn.close()
 
         return render_template('view_test_drives.html', test_drives=test_drives, current_year='2024')
-    
+
     except mysql.connector.Error as err:
         flash(f"Database error: {err}", 'danger')
         return redirect(url_for('index'))
 
 
+@app.route('/delete_test_drive/<int:testdrive_id>', methods=['POST'])
+def delete_test_drive(testdrive_id):
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor()
+
+        cursor.execute("DELETE FROM TestDrive WHERE testdrive_id = %s", (testdrive_id,))
+        conn.commit()
+
+        cursor.close()
+        conn.close()
+
+        flash("Test drive deleted successfully.", "success")
+        return redirect(url_for('view_test_drives'))
+    except mysql.connector.Error as err:
+        flash(f"Database error: {err}", 'danger')
+        return redirect(url_for('view_test_drives'))
+    
+
+@app.route('/my_test_drives')
+def my_test_drives():
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor(dictionary=True)
+
+        # Fetch test drives for the logged-in user
+        user_id = session['user_id']
+        cursor.execute("""
+            SELECT TestDrive.testdrive_id, Vehicle.make AS vehicle_make, Vehicle.model AS vehicle_model, 
+                   TestDrive.test_drive_date, TestDrive.test_drive_time, TestDrive.status
+            FROM TestDrive
+            JOIN Vehicle ON TestDrive.vehicle_id = Vehicle.vehicle_id
+            WHERE TestDrive.user_id = %s
+        """, (user_id,))
+        user_test_drives = cursor.fetchall()
+
+        cursor.close()
+        conn.close()
+
+        return render_template('my_test_drives.html', test_drives=user_test_drives, current_year='2024')
+
+    except mysql.connector.Error as err:
+        flash(f"Database error: {err}", 'danger')
+        return redirect(url_for('index'))
+   
+
+
+# Inquiry Route - Displays the inquiry form
 @app.route('/inquiry/<int:vehicle_id>/<vehicle_make>/<vehicle_model>')
 def inquiry(vehicle_id, vehicle_make, vehicle_model):
     # Process the vehicle_id, vehicle_make, and vehicle_model if needed
@@ -464,6 +623,80 @@ def view_inquiries():
     except mysql.connector.Error as err:
         flash(f"Database error: {err}", 'danger')
         return render_template('error.html')
+    
+
+@app.route('/reply_inquiry/<int:inquiry_id>', methods=['POST'])
+@admin_required
+def reply_inquiry(inquiry_id):
+    try:
+        reply_text = request.form['reply']
+        reply_date = datetime.now()
+
+
+        # Connect to the database
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor()
+
+        # Update the inquiry with the admin's reply
+        update_query = "UPDATE inquiry SET reply = %s, reply_date = %s WHERE inquiry_id = %s"
+        cursor.execute(update_query, (reply_text, reply_date, inquiry_id))
+        conn.commit()
+
+        cursor.close()
+        conn.close()
+
+        flash("Reply sent successfully!", 'success')
+        return redirect(url_for('view_inquiries'))
+
+    except mysql.connector.Error as err:
+        flash(f"Database error: {err}", 'danger')
+        return redirect(url_for('view_inquiries'))
+
+
+@app.route('/my_inquiries')
+def my_inquiries():
+    if 'username' in session:
+        user_id = session['user_id']
+        try:
+            conn = mysql.connector.connect(**db_config)
+            cursor = conn.cursor(dictionary=True)
+
+            # Fetch the user's inquiries
+            query = "SELECT * FROM inquiry WHERE user_id = %s"
+            cursor.execute(query, (user_id,))
+            inquiries = cursor.fetchall()
+
+            cursor.close()
+            conn.close()
+
+            return render_template('my_inquiries.html', inquiries=inquiries)
+
+        except mysql.connector.Error as err:
+            flash(f"Database error: {err}", 'danger')
+            return render_template('error.html')
+
+
+
+@app.route('/delete_inquiry/<int:inquiry_id>', methods=['POST'])
+@admin_required  # Ensure that only admin users can access this route
+def delete_inquiry(inquiry_id):
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor()
+
+        # Delete the inquiry from the database
+        cursor.execute("DELETE FROM inquiry WHERE inquiry_id = %s", (inquiry_id,))
+        conn.commit()
+
+        cursor.close()
+        conn.close()
+
+        flash('Inquiry deleted successfully.', 'success')
+        return redirect(url_for('view_inquiries'))
+
+    except mysql.connector.Error as err:
+        flash(f"Database error: {err}", 'danger')
+        return redirect(url_for('view_inquiries'))
 
 
 
