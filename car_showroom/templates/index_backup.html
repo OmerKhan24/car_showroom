@@ -1,0 +1,39 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Showroom</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <h1>Welcome to the Car Showroom</h1>
+
+    <!-- Search Form to search by make or model -->
+    <form action="/search_cars" method="POST" style="display: flex; gap: 10px; align-items: center;">
+        <input type="text" name="search_query" id="search_query" placeholder="Search by make or model" required>
+        <button type="submit">Search</button>
+    </form>
+
+    <!-- Link to view all cars -->
+    <a href="/show_cars" style="margin-top: 20px; display: block;">Show All Cars</a>
+
+    <!-- Add Car Form -->
+    <form action="/add_car" method="POST" style="margin-top: 20px;">
+        <label for="make">Make:</label>
+        <input type="text" name="make" id="make" required>
+
+        <label for="model">Model:</label>
+        <input type="text" name="model" id="model" required>
+
+        <label for="year">Year:</label>
+        <input type="number" name="year" id="year" required>
+
+        <label for="price">Price:</label>
+        <input type="number" name="price" id="price" required>
+
+        <button type="submit">Add Car</button>
+    </form>
+</body>
+</html>

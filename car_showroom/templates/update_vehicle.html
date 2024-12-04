@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Update Vehicle - Luxury Car Showroom</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&family=Playfair+Display:wght@400;700&display=swap"
+        rel="stylesheet" />
+    <style>
+        body {
+            font-family: "Inter", sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1c1c1c, #434343);
+            color: #fff;
+            padding: 1.5rem 0;
+            text-align: center;
+            position: relative;
+        }
+
+        header h1 {
+            font-family: "Playfair Display", serif;
+            margin: 0;
+        }
+
+        .nav-link {
+            color: #ecf0f1 !important;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #e67e22 !important;
+        }
+
+        .btn-container {
+            position: absolute;
+            top: 35px;
+            right: 20px;
+            display: flex;
+            gap: 0.75rem;
+            z-index: 10;
+        }
+
+        .btn-custom {
+            display: flex;
+            align-items: center;
+            padding: 6px 12px;
+            border: 2px solid #e67e22;
+            border-radius: 5px;
+            color: #333;
+            text-decoration: none;
+            font-size: 0.9rem;
+            background-color: #fff;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-custom i {
+            margin-right: 5px;
+        }
+
+        .btn-custom:hover {
+            background-color: #e67e22;
+            color: white;
+            border-color: #d35400;
+        }
+
+        .container {
+            max-width: 800px;
+            margin-top: 50px;
+            margin-bottom: 50px;
+        }
+
+        h2 {
+            font-family: "Playfair Display", serif;
+            color: #1c1c1c;
+            margin-bottom: 30px;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            padding: 10px;
+        }
+
+        .btn-primary {
+            background-color: #e67e22;
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #d35400;
+        }
+
+        .alert {
+            font-size: 1rem;
+            margin-top: 20px;
+        }
+
+        footer {
+            background: #1c1c1c;
+            color: #bbb;
+            padding: 2rem 0;
+            text-align: center;
+            margin-top: auto;
+        }
+
+        footer a {
+            color: #e67e22;
+        }
+
+        footer a:hover {
+            color: #d35400;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <h1>Luxury Car Showroom</h1>
+        <nav>
+            <ul class="nav justify-content-center">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('index') }}">Home</a>
+                </li>
+                {% if 'username' in session %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('wishlist') }}">Wishlist</a>
+                </li>
+                {% if session['username'] == 'admin' %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('add_vehicle') }}">Add Vehicle</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('view_test_drives') }}">View Test Drives</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('view_inquiries') }}">View Inquiries</a>
+                </li>
+                {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('signup') }}">Sign Up</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+
+        <!-- Login and Signup Buttons -->
+        <div class="btn-container">
+            {% if 'username' in session %}
+            <a href="{{ url_for('logout') }}" class="btn-custom">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+            {% else %}
+            <a href="{{ url_for('login') }}" class="btn-custom login">
+                <i class="fas fa-user"></i> Login
+            </a>
+            <a href="{{ url_for('signup') }}" class="btn-custom signup">
+                <i class="fas fa-user-plus"></i> Sign Up
+            </a>
+            {% endif %}
+        </div>
+    </header>
+
+    <!-- Update Vehicle Form -->
+    <div class="container">
+        <h2>Update Vehicle Details</h2>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="my-3">
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('update_vehicle', vehicle_id=vehicle.vehicle_id) }}"
+            enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="make">Make</label>
+                <input type="text" name="make" class="form-control" value="{{ vehicle.make }}" required />
+            </div>
+            <div class="form-group">
+                <label for="model">Model</label>
+                <input type="text" name="model" class="form-control" value="{{ vehicle.model }}" required />
+            </div>
+            <div class="form-group">
+                <label for="year">Year</label>
+                <input type="number" name="year" class="form-control" value="{{ vehicle.year }}" required />
+            </div>
+            <div class="form-group">
+                <label for="price">Price</label>
+                <input type="number" name="price" class="form-control" value="{{ vehicle.price }}" required />
+            </div>
+            <div class="form-group">
+                <label for="description">Description</label>
+                <input type="text" name="description" class="form-control" value="{{ vehicle.description }}" required />
+            </div>
+            <div class="form-group">
+                <label for="vehicle_type">Vehicle Type</label>
+                <select name="vehicle_type" class="form-control" required>
+                    <option value="Car" {% if vehicle.vehicle_type=="Car" %}selected{% endif %}>
+                        Car
+                    </option>
+                    <option value="Bike" {% if vehicle.vehicle_type=="Bike" %}selected{% endif %}>
+                        Bike
+                    </option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="category">Category</label>
+                <select name="category" class="form-control" required>
+                    <optgroup label="Cars">
+                        <option value="Sedan" {% if vehicle.vehicle_type=="Sedan" %}selected{% endif %}>
+                            Sedan
+                        </option>
+                        <option value="SUV" {% if vehicle.vehicle_type=="SUV" %}selected{% endif %}>
+                            SUV
+                        </option>
+                        <option value="Convertible" {% if vehicle.vehicle_type=="Convertible" %}selected{% endif %}>
+                            Convertible
+                        </option>
+                        <option value="Sport" {% if vehicle.vehicle_type=="Sport" %}selected{% endif %}>
+                            Sport
+                        </option>
+                        <option value="Coupe" {% if vehicle.vehicle_type=="Coupe" %}selected{% endif %}>
+                            Coupe
+                        </option>
+                        <option value="Hatchback" {% if vehicle.vehicle_type=="Hatchback" %}selected{% endif %}>
+                            Hatchback
+                        </option>
+                    </optgroup>
+                    <optgroup label="Bikes">
+                        <option value="Sport" {% if vehicle.vehicle_type=="Sport" %}selected{% endif %}>
+                            Sport
+                        </option>
+                        <option value="Cruiser" {% if vehicle.vehicle_type=="Cruiser" %}selected{% endif %}>
+                            Cruiser
+                        </option>
+                        <option value="Touring" {% if vehicle.vehicle_type=="Touring" %}selected{% endif %}>
+                            Touring
+                        </option>
+                        <option value="Standard" {% if vehicle.vehicle_type=="Standard" %}selected{% endif %}>
+                            Standard
+                        </option>
+                    </optgroup>
+
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="features">Vehicle Features</label>
+                <div id="features-container">
+                    {% for feature in features %}
+                    <div class="input-group mb-2 feature-item" data-feature-id="{{ feature }}">
+                        <input type="text" name="features[]" class="form-control" value="{{ feature }}">
+                        <input type="hidden" name="removed_features[]" class="removed-feature">
+                        <button type="button" class="btn btn-danger btn-sm remove-feature-btn" onclick="removeFeature(this)">Delete</button>
+                    </div>
+                    {% endfor %}
+                </div>
+                <button type="button" id="add_feature_btn" class="btn btn-primary">Add Feature</button>
+                
+            </div>
+
+
+
+            <div class="form-group">
+                <label for="image">Vehicle Image (Optional)</label>
+                <input type="file" name="image" class="form-control-file" accept="image/*" />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Update Vehicle</button>
+        </form>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Luxury Car Showroom. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        // Function to remove a feature input field and mark it for removal
+        function removeFeature(button) {
+            var featureItem = button.closest('.feature-item');
+            var hiddenField = featureItem.querySelector('.removed-feature');
+
+            // Get the feature name or ID from the data attribute
+            var featureId = featureItem.getAttribute('data-feature-id');
+
+            // Mark the feature for deletion if it has an ID
+            if (hiddenField && featureId !== 'new') {
+                hiddenField.value = featureId;  // Store the feature ID for deletion
+                document.getElementById('features-container').appendChild(hiddenField);
+            }
+
+            // Remove the feature input group from the DOM
+            featureItem.remove();
+        }
+
+        // Add a new feature input field
+        document.getElementById('add_feature_btn').addEventListener('click', function () {
+            var container = document.getElementById('features-container');
+
+            // Create a new input field group
+            var newFeatureItem = document.createElement('div');
+            newFeatureItem.classList.add('input-group', 'mb-2', 'feature-item');
+            newFeatureItem.setAttribute('data-feature-id', 'new');  // Set "new" for new features
+
+            // Create the input field for the feature
+            var inputField = document.createElement('input');
+            inputField.type = 'text';
+            inputField.name = 'features[]';
+            inputField.classList.add('form-control');
+
+            // Create the remove button
+            var removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.classList.add('btn', 'btn-danger', 'btn-sm', 'remove-feature-btn');
+            removeButton.textContent = 'Delete';
+            removeButton.addEventListener('click', function () {
+                removeFeature(removeButton);
+            });
+
+            // Append the input field and remove button to the new feature item
+            newFeatureItem.appendChild(inputField);
+            newFeatureItem.appendChild(removeButton);
+
+            // Append the new feature item to the container
+            container.appendChild(newFeatureItem);
+        });
+
+
+    </script>
+
+</body>
+
+</html>
