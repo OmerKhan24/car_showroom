@@ -11,7 +11,6 @@ import json
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 
-# MySQL configuration (update according to your settings in XAMPP)
 db_config = {
     'user': 'root',
     'password': '',
@@ -19,10 +18,9 @@ db_config = {
     'database': 'car_showroom'
 }
 
-ADMIN_USERNAME = 'admin'  # Admin username for admin-only routes
+ADMIN_USERNAME = 'admin'  
 
-# Index Route - Displays available vehicles
-# Index Route - Displays latest 8 vehicles
+
 @app.route('/')
 def index():
     try:
@@ -77,10 +75,11 @@ def show_all_cars():
         # Build dynamic query based on filters
         query = """
         SELECT Vehicle.*, Car.image 
-        FROM Vehicle 
+        FROM Vehicle
         JOIN Car ON Vehicle.vehicle_id = Car.vehicle_id
-        WHERE 1=1
         """
+        # LEFT JOIN Bike ON Vehicle.vehicle_id = Bike.vehicle_id
+        print(query)
         
         params = []
 
@@ -95,9 +94,9 @@ def show_all_cars():
                 query += " AND LOWER(vehicle_type) LIKE %s"
                 params.append('bike/%')
                 
-            elif vehicle_type.lower() == 'crusier' or vehicle_type.lower() == 'sport' or vehicle_type.lower() == 'touring' or vehicle_type.lower() == 'standard':
+            elif vehicle_type.lower() == 'crusier' or vehicle_type.lower() == 'touring' or vehicle_type.lower() == 'standard':
                 query += " AND LOWER(vehicle_type) = %s"
-                params.append(f"bike/{vehicle_type.lower()}")
+                params.append(f"Bike/{vehicle_type.lower()}")
 
             else:
                 # Add 'Car/' prefix to match database format
@@ -106,10 +105,14 @@ def show_all_cars():
 
         # Sorting
         query += f" ORDER BY {sort_by} {order}"
+        
+        print(query)
 
         # Execute the query
         cursor.execute(query, tuple(params))
         vehicles = cursor.fetchall()
+        
+        print(vehicles)
 
         # Close connections
         cursor.close()
@@ -167,6 +170,7 @@ def view_users():
 
 # Delete a user
 @app.route('/delete_user/<int:user_id>', methods=['POST'])
+@admin_required
 def delete_user(user_id):
     try:
         conn = mysql.connector.connect(**db_config)
@@ -186,6 +190,7 @@ def delete_user(user_id):
 
 # Make a user an admin
 @app.route('/make_admin/<int:user_id>', methods=['POST'])
+@admin_required
 def make_admin(user_id):
     try:
         conn = mysql.connector.connect(**db_config)
@@ -206,6 +211,7 @@ def make_admin(user_id):
  
     
 @app.route('/edit_user/<int:user_id>', methods=['GET', 'POST'])
+@admin_required
 def edit_user(user_id):
     try:
         # Connect to the database
@@ -261,19 +267,42 @@ def login():
             cursor = conn.cursor(dictionary=True)
             cursor.execute("SELECT * FROM User WHERE user_name = %s", (username,))
             user = cursor.fetchone()
-            cursor.close()
-            conn.close()
+
+            success = False
+            error_message = None
 
             if user and check_password_hash(user['password'], password):
                 session['user_id'] = user['user_id']
                 session['username'] = user['user_name']
                 session['role'] = user['user_type']  # Store the role in the session
                 flash("Logged in successfully!", "success")
+                success = True
+                cursor.execute("UPDATE User SET last_login = NOW() WHERE user_id = %s", (user['user_id'],))
+                conn.commit()
+                session['last_login'] = user['last_login']  
                 return redirect(url_for('index'))
+
             else:
                 flash("Invalid credentials!", "danger")
+                error_message = "Invalid credentials"
+
         except mysql.connector.Error as err:
             flash(f"Database error: {err}", 'danger')
+            error_message = str(err)
+
+        # Log the attempt to Audit_Log
+        try:
+            cursor.execute(
+                "INSERT INTO Audit_Log (user_name, success, error_message) VALUES (%s, %s, %s)",
+                (username, success, error_message)
+            )
+            conn.commit()
+        except mysql.connector.Error as err:
+            flash(f"Failed to log audit: {err}", 'danger')
+
+        finally:
+            cursor.close()
+            conn.close()
 
     return render_template('login.html')
 
@@ -366,17 +395,33 @@ def add_vehicle():
                 cursor.execute(query, (make, model, year, price, description, vehicle_type_with_category))
                 vehicle_id = cursor.lastrowid  # Fetch new vehicle ID
                 conn.commit()
+                print(query)
 
-                # Insert image into Cars table
-                query = "INSERT INTO Car (vehicle_id, image) VALUES (%s, %s)"
-                cursor.execute(query, (vehicle_id, filename))
-                conn.commit()
+                if vehicle_type == 'Car':
+                    # Insert image into Cars table
+                    query = "INSERT INTO Car (vehicle_id, image) VALUES (%s, %s)"
+                    cursor.execute(query, (vehicle_id, filename))
+                    conn.commit()
+                    print(query)
+                    
+                    
+                elif vehicle_type == 'Bike':
+                    # Insert image into Bikes table
+                    query = "INSERT INTO Bike (vehicle_id, image) VALUES (%s, %s)"
+                    cursor.execute(query, (vehicle_id, filename))
+                    conn.commit()
+                    print(query)
+                    
 
                 # Insert features into Feature table
                 for feature in features:
                     if feature.strip():  # Avoid empty features
                         query = "INSERT INTO feature (vehicle_id, feature_name) VALUES (%s, %s)"
                         cursor.execute(query, (vehicle_id, feature.strip()))
+                conn.commit()
+                
+                query = "INSERT INTO Car (vehicle_id, image) VALUES (%s, %s)"
+                cursor.execute(query, (vehicle_id, filename))
                 conn.commit()
 
                 cursor.close()
@@ -650,6 +695,7 @@ def update_vehicle(vehicle_id):
 
 # Route to delete a vehicle (Admin only)
 @app.route('/delete_vehicle/<int:vehicle_id>', methods=['GET'])
+@admin_required
 def delete_vehicle(vehicle_id):
     try:
         conn = mysql.connector.connect(**db_config)
@@ -703,6 +749,7 @@ def schedule_test_drive(vehicle_id):
 
 # Route to display the form and add an installment plan
 @app.route('/add_installment/<int:vehicle_id>', methods=['GET', 'POST'])
+@admin_required
 def add_installment(vehicle_id):
     if request.method == 'POST':
         # Retrieve form data
@@ -777,6 +824,7 @@ def view_test_drives():
 
 
 @app.route('/delete_test_drive/<int:testdrive_id>', methods=['POST'])
+@admin_required
 def delete_test_drive(testdrive_id):
     try:
         conn = mysql.connector.connect(**db_config)
@@ -938,7 +986,7 @@ def my_inquiries():
 
 
 @app.route('/delete_inquiry/<int:inquiry_id>', methods=['POST'])
-@admin_required  # Ensure that only admin users can access this route
+@admin_required  
 def delete_inquiry(inquiry_id):
     try:
         conn = mysql.connector.connect(**db_config)
