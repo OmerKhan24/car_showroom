@@ -98,9 +98,9 @@ DB_NAME = "car_showroom_db"  # The database you created in phpMyAdmin
 ---
 
 ## 📌 Future Improvements
-🚀 Add payment gateway integration for purchases.
-🚀 Implement an AI-based recommendation system for vehicle suggestions.
-🚀 Improve UI/UX for a better user experience.
+- Add payment gateway integration for purchases.
+- Implement an AI-based recommendation system for vehicle suggestions.
+- Improve UI/UX for a better user experience.
 
 ---
 
