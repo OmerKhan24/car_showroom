@@ -46,7 +46,6 @@ Ensure you have the following installed:
 - 🔹 Python 3.x  
 - 🔹 Flask  
 - 🔹 MySQL (via XAMPP)  
-- 🔹 ReactJS  
 
 ### **1️⃣ Setup XAMPP (MySQL & Apache Server)**  
 1. **Download and Install XAMPP:**  
