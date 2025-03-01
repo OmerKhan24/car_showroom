@@ -6,10 +6,10 @@ A **web-based** Car Showroom Management System designed to streamline vehicle li
 🔗 [GitHub Repository](https://github.com/OmerKhan24/car_showroom)  
 
 ## 👨‍💻 Team Members  
-- **Omer Khan** (22K-4418)  
-- **Muhib Siddiqui** (22K-4428)  
-- **Salik Ahmad** (22K-4403)  
-📚 *Course:* CS 2005 - Database Systems  
+- [**Omer Khan**](github.com/OmerKhan24)
+- [**Muhib Siddiqui**](https://github.com/muhibsiddiqui)
+- [**Salik Ahmad**](https://github.com/saliksalik) 
+ 
 
 ---
 
@@ -85,15 +85,15 @@ DB_NAME = "car_showroom_db"  # The database you created in phpMyAdmin
    ```
 2. Install dependencies:
   ```bash
-  pip install -r requirements.txt
+     pip install -r requirements.txt
   ```
-3.Run the Flask server:
+3. Run the Flask server:
   ```bash
-  python app.py
+     python app.py
   ```
-4.The backend API should now run at:
+4. The backend API should now run at:
   ```bash
-  http://127.0.0.1:5000/
+     http://127.0.0.1:5000/
   ```
 
 ---
